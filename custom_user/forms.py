@@ -2,6 +2,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import forms as auth_forms, authenticate
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.hashers import UNUSABLE_PASSWORD
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User as AuthUser
 from custom_user.utils import SubclassedUser as User
@@ -40,8 +41,8 @@ class UserCreateAdminForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ("email",)
-        exclude = ('username',)
+        fields = ['email',]
+        exclude = ['username',]
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1", "")
@@ -175,6 +176,13 @@ class EmailLoginForm(BaseLoginForm):
             elif not self.user_cache.is_active:
                 raise forms.ValidationError(self.error_messages['inactive'])
         return self.cleaned_data
+
+class PasswordResetForm(auth_forms.PasswordResetForm):
+    def save(self, *args, **kwargs):
+        """
+        Override standard forgot password email sending. Sending now occurs in the view.
+        """
+        return
 
 class ProfileEditForm(forms.ModelForm):
     # TODO: Make email and non-email version

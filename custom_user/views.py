@@ -1,7 +1,7 @@
 import urlparse
+from custom_user.emails import TokenTemplateEmail
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, login, logout
-from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
 from django.core.exceptions import ImproperlyConfigured
@@ -17,7 +17,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView, UpdateView
 from custom_user.backends import auto_login
-from custom_user.forms import EmailLoginForm, InvitationForm, SetPasswordForm, InvitationCompleteForm, ProfileEditForm, LoginForm
+from custom_user.forms import EmailLoginForm, InvitationForm, SetPasswordForm, InvitationCompleteForm, ProfileEditForm, LoginForm, PasswordResetForm
 from custom_user.utils import SubclassedUser as User, is_email_only
 from django.conf import settings
 
@@ -105,64 +105,20 @@ class LoginView(FormView):
             return self.form_invalid(form)
 
 
-class SendEmailWithTokenMixin(object):
-    token_generator = default_token_generator
-    from_email = None
-    email_subject = None
-    email_template_name = None
-    token_view_name = None
-    use_request_host = False # Instead of the sites app database entry
+class SendTokenEmailMixin(object):
+    email_template_class = TokenTemplateEmail
 
-    def get_token_generator(self):
-        return self.token_generator
-
-    def get_from_email(self):
-        if self.from_email is None:
-            raise ImproperlyConfigured("No from_email. Please provide a from_email in the view class.")
-        else:
-            return self.from_email
-
-    def get_email_subject(self):
-        return self.email_subject
-
-    def get_email_template_name(self):
-        if self.email_template_name is None:
-            raise ImproperlyConfigured("No email_template_name. Please provide an email_template_name in the view class.")
-        else:
-            return self.email_template_name
-
-    def get_complete_token_url_path(self, uidb36, token):
-        if self.token_view_name:
-            return reverse(self.token_view_name, kwargs={'uidb36':uidb36, 'token':token})
-        else:
-            raise ImproperlyConfigured("No token_view_name. Please provide a token_view_name in the view class or "
-                                        "override get_complete_token_url_path().")
-
-    def get_email_context_data(self, user):
-        current_site = get_current_site(self.request)
-        context_data = {
-            'email': user.email,
-            'domain': self.request.get_host() if self.use_request_host else current_site.domain,
-            'site_name': current_site.name,
-            'uid': int_to_base36(user.id),
-            'user': user,
-            'token': self.get_token_generator().make_token(user),
-            'protocol': self.request.is_secure() and 'https' or 'http',
-        }
-        context_data['token_url_path'] = self.get_complete_token_url_path(uidb36=context_data['uid'], token=context_data['token'])
-        context_data['token_url'] = '%s://%s%s' % (context_data['protocol'], context_data['domain'], context_data['token_url_path'])
-        return context_data
+    def get_email_kwargs(self, user):
+        return {'user': user}
 
     def send_email(self, user):
         """
-        This plus get_email_context_data() is effectively the same email sending process as auth.forms.PasswordResetForm.save()
         """
-        t = loader.get_template(self.get_email_template_name())
-        context_data = self.get_email_context_data(user)
-        send_mail(self.get_email_subject(), t.render(Context(context_data)), self.get_from_email(), [context_data['email']])
+        email_template = self.email_template_class(**self.get_email_kwargs(user))
+        return email_template.send_email()
 
 
-class InvitationMixin(SendEmailWithTokenMixin):
+class InvitationMixin(SendTokenEmailMixin):
     form_class = InvitationForm
 
     def form_valid(self, form):
@@ -288,7 +244,7 @@ class LogoutView(RedirectView):
         return reverse('login')
 
 
-class ForgotPasswordView(SendEmailWithTokenMixin, FormView):
+class ForgotPasswordView(SendTokenEmailMixin, FormView):
     form_class = PasswordResetForm
     template_name = 'custom_user/forgot_password_start.html'
 
@@ -297,8 +253,11 @@ class ForgotPasswordView(SendEmailWithTokenMixin, FormView):
         self.send_email(user)
         return super(ForgotPasswordView, self).form_valid(form)  # Do redirect
 
-    def get_email_subject(self):
-        return "Password reset on %s" % get_current_site(self.request)
+    def get_email_kwargs(self, user):
+        kwargs = super(ForgotPasswordView, self).get_email_kwargs(user)
+        kwargs['email_template_name'] = 'custom_user/password_reset_email.html'
+        kwargs['subject'] = "Password reset on %s" % get_current_site(self.request)
+        return kwargs
 
     def get_success_url(self):
         return reverse('forgot_password_check_email')

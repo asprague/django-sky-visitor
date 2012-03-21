@@ -3,14 +3,20 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-)
 
+###
+# Custom settings for custom_user
+###
 
+CUSTOM_USER_MODEL = 'example_project.User'
+AUTHENTICATION_BACKENDS = [
+    'custom_user.backends.EmailBackend',
+]
 
 INSTALLED_APPS = (
+    'example_project',
     'custom_user',
+
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -18,6 +24,16 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
+)
+
+
+
+
+
+
+
+ADMINS = (
+    # ('Your Name', 'your_email@example.com'),
 )
 
 MANAGERS = ADMINS

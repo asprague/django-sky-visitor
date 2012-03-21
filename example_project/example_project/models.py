@@ -1,10 +1,20 @@
-from custom_user.models import CustomUser, EmailUserManager
+from custom_user.models import CustomUser, EmailUserManager, UserManager, EmailCustomUser
 
-class FallbackUser(CustomUser):
+# This is the model that is used by default in this app.
+class User(EmailCustomUser):
     """
-    Shouldn't really need this class. Here mostly for testing purposes. Instead, you should subclass CustomUser
-    in your application and specify it using the CUSTOM_USER_MODEL setting
+    Custom user class with email-only authentication
+    """
+
+    objects = EmailUserManager() # Needed because of our subclassing. Weird quirk.
+
+
+
+# This model is used in tests, but isn't specified in the settings for the normal use of this example project
+class OtherUser(CustomUser):
+    """
+    Custom user class
     """
 
     # Needed because of our subclassing. Weird quirk.
-    objects = EmailUserManager()
+    objects = UserManager()

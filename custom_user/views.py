@@ -17,11 +17,11 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView, UpdateView
 from custom_user.backends import auto_login
-from custom_user.forms import EmailLoginForm, InvitationForm, SetPasswordForm, InvitationCompleteForm, ProfileEditForm
-from custom_user.utils import SubclassedUser as User
+from custom_user.forms import EmailLoginForm, InvitationForm, SetPasswordForm, InvitationCompleteForm, ProfileEditForm, LoginForm
+from custom_user.utils import SubclassedUser as User, is_email_only
 from django.conf import settings
 
-# Originally from: https://github.com/stefanfoulis/django-class-based-auth-views/blob/develop/class_based_auth_views/views.py
+# Derived from: https://github.com/stefanfoulis/django-class-based-auth-views/blob/develop/class_based_auth_views/views.py
 class LoginView(FormView):
     """
     This is a class based version of django.contrib.auth.views.login.
@@ -35,7 +35,6 @@ class LoginView(FormView):
                 name="login"),
 
     """
-    form_class = EmailLoginForm
     redirect_field_name = REDIRECT_FIELD_NAME
     success_url_overrides_redirect_field = False
     template_name = 'custom_user/login.html'
@@ -44,6 +43,13 @@ class LoginView(FormView):
     @method_decorator(never_cache)
     def dispatch(self, *args, **kwargs):
         return super(LoginView, self).dispatch(*args, **kwargs)
+
+    def get_form_class(self):
+        # TODO: Support email+username login when in username-mode
+        if is_email_only():
+            return EmailLoginForm
+        else:
+            return LoginForm
 
     def form_valid(self, form):
         """
@@ -97,6 +103,7 @@ class LoginView(FormView):
         else:
             self.set_test_cookie()
             return self.form_invalid(form)
+
 
 class SendEmailWithTokenMixin(object):
     token_generator = default_token_generator

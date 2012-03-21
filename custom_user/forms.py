@@ -1,6 +1,7 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth import forms as auth_forms, authenticate
+from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User as AuthUser
 from custom_user.utils import SubclassedUser as User
@@ -9,6 +10,7 @@ from custom_user.fields import UniqueRequiredEmailField, PasswordRulesField
 
 # All user forms should inherit from this form to make sure email is unique
 class BaseUserCreateForm(forms.ModelForm):
+    # TODO: Make email and non-email version
     email = UniqueRequiredEmailField()
 
     class Meta:
@@ -23,6 +25,7 @@ class BaseUserCreateForm(forms.ModelForm):
             self.fields['last_name'].required = True
 
 class UserCreateAdminForm(forms.ModelForm):
+    # TODO: Make email and non-email version
     password1 = PasswordRulesField(label=_("Password"))
     username = None
     # TODO: Need a way to have a username-based option and an email-based option
@@ -62,6 +65,7 @@ class UserChangeAdminForm(auth_forms.UserChangeForm):
 
 # TODO: Inheriting from this form creates a auth.User instead of a subclassed User. Fix that.
 class RegisterForm(auth_forms.UserCreationForm):
+    # TODO: Make email and non-email version
     email = UniqueRequiredEmailField()
 
     class Meta:
@@ -70,6 +74,7 @@ class RegisterForm(auth_forms.UserCreationForm):
 
 
 class InvitationForm(BaseUserCreateForm):
+    # TODO: Make email and non-email version
     email = UniqueRequiredEmailField()
 
     def save(self, commit=True):
@@ -105,32 +110,23 @@ PasswordChangeForm.base_fields.keyOrder = ['old_password', 'new_password1', 'new
 
 
 class InvitationCompleteForm(forms.ModelForm):
+    # TODO: Make email and non-email version
     email = UniqueRequiredEmailField()
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
 
 
-class EmailLoginForm(forms.Form):
-    # NOTE: We choose not to extend AuthenticationForm here because we don't need the username field
-    email = forms.CharField(label=_("Email"), max_length=75)
-    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+class BaseLoginForm(forms.Form):
+    # NOTE: We choose not to extend AuthenticationForm here because we only need username in one of the subclasses
+
+    error_messages = {
+        'inactive': _("This account is inactive."),
+    }
 
     def __init__(self, *args, **kwargs):
         self.user_cache = None
-        super(EmailLoginForm, self).__init__(*args, **kwargs)
-
-    def clean(self):
-        email = self.cleaned_data.get('email')
-        password = self.cleaned_data.get('password')
-
-        if email and password:
-            self.user_cache = authenticate(email=email, password=password)
-            if self.user_cache is None:
-                raise forms.ValidationError(_("Please enter a correct username and password. Note that both fields are case-sensitive."))
-            elif not self.user_cache.is_active:
-                raise forms.ValidationError(_("This account is inactive."))
-        return self.cleaned_data
+        super(BaseLoginForm, self).__init__(*args, **kwargs)
 
     def get_user_id(self):
         if self.user_cache:
@@ -140,7 +136,48 @@ class EmailLoginForm(forms.Form):
     def get_user(self):
         return self.user_cache
 
+class LoginForm(BaseLoginForm):
+    username = forms.CharField(label=_("Username"), max_length=30)
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        self.error_messages['invalid_login'] = _("Please enter a correct username and password. Note that both fields are case-sensitive.")
+        super(LoginForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+
+        if username and password:
+            self.user_cache = authenticate(username=username, password=password)
+            if self.user_cache is None:
+                raise forms.ValidationError(self.error_messages['invalid_login'])
+            elif not self.user_cache.is_active:
+                raise forms.ValidationError(self.error_messages['inactive'])
+        return self.cleaned_data
+
+class EmailLoginForm(BaseLoginForm):
+    email = forms.CharField(label=_("Email"), max_length=75)
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+
+    def __init__(self, *args, **kwargs):
+        self.error_messages['invalid_login'] = _("Please enter a correct email and password. Note that both fields are case-sensitive.")
+        super(EmailLoginForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        email = self.cleaned_data.get('email')
+        password = self.cleaned_data.get('password')
+
+        if email and password:
+            self.user_cache = authenticate(email=email, password=password)
+            if self.user_cache is None:
+                raise forms.ValidationError(self.error_messages['invalid_login'])
+            elif not self.user_cache.is_active:
+                raise forms.ValidationError(self.error_messages['inactive'])
+        return self.cleaned_data
+
 class ProfileEditForm(forms.ModelForm):
+    # TODO: Make email and non-email version
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']

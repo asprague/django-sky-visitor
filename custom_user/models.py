@@ -1,6 +1,6 @@
 import uuid
 import datetime
-from django.contrib.auth.models import User as AuthUser, UserManager
+from django.contrib.auth import models as auth_models
 
 ## This User class will always be the subclassed User that is defined by CUSTOM_USER_MODEL in settings
 #User = get_user_model()
@@ -15,15 +15,18 @@ def get_uuid_username():
     username = get_uuid_username_string()
     try:
         # We use AuthUser here because it's more straight forward and we don't need to check the subclassed user since we just need a count
-        while AuthUser.objects.get(username=username).count() > 0:
+        while auth_models.User.objects.get(username=username).count() > 0:
             username = get_uuid_username_string()
-    except AuthUser.DoesNotExist:
+    except auth_models.User.DoesNotExist:
         pass
     return username
 
 
+# TODO: move these to managers.py
+class UserManager(auth_models.UserManager):
+    pass
+
 class EmailUserManager(UserManager):
-    # TODO: move this to managers.py
 
     # TODO: Make email unique if they use create_user() as well
 
@@ -61,10 +64,12 @@ class EmailUserManager(UserManager):
         return self.create_user_by_email(email, is_active=False, commit=commit)
 
 
-class CustomUser(AuthUser):
+class CustomUser(auth_models.User):
     """
     This is the abstract base class that you should subclass from to add your own fields.
     """
+    _is_email_only = False
+
     # Redefining objects is needed because of our subclassing. Weird quirk. Any subclass of this model also needs to define BaseUserManager as well.
     objects = UserManager()
 
@@ -74,15 +79,15 @@ class CustomUser(AuthUser):
     def save(self, *args, **kwargs):
         if not self.pk:
             self._newly_created = True
-        if not self.pk and not self.username:
-            self.username = get_uuid_username()
         super(CustomUser, self).save(*args, **kwargs)
 
 
-class EmailCustomUser(AuthUser):
+class EmailCustomUser(CustomUser):
     """
     Inherit fromt his class if you'd like to have an "email only" user and hide usernames
     """
+    _is_email_only = True
+
     # Redefining objects is needed because of our subclassing. Weird quirk. Any subclass of this model also needs to define BaseUserManager as well.
     objects = EmailUserManager()
 
@@ -93,9 +98,11 @@ class EmailCustomUser(AuthUser):
         abstract = True
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            self._newly_created = True
         if not self.pk and not self.username:
             self.username = get_uuid_username()
         super(EmailCustomUser, self).save(*args, **kwargs)
+
+
+
+
 

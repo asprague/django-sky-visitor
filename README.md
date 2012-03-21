@@ -4,10 +4,47 @@ ADD TO README:
 
   * Benefits of subclassing: easier to write queries on our end.
   * Subclassing: always does an inner join on your table and the auth.user table.
+  * Version 0.1.0 -- In development
+  * Fix pip package path
 
 # Features
 
+  * Email-based authentication. Hides username
   * Adds password rules to field
+
+
+# Usage
+Throughout this app, any class beginning with `Email` indicates that it is for use with email-only authentication systems.
+In all cases, there should be a matching class without `Email` at the beginning of the class name that is for use with username-focused authentication systems.
+
+
+## Quickstart
+
+  * `pip install PACKAGEPATHHERE`
+  * Add `custom_user` near the top of your `INSTALLED_APPS` setting
+  * Somewhere in your own `myapp.models.py`, define one of the two following code blocks:
+
+```python
+# Assume this is in myapp.models
+from custom_user import EmailCustomUser, EmailUserManager
+
+class User(EmailCustomUser):
+    objects = EmailUserManager()
+```
+
+  * In your're `settings.py` add these lines:
+
+```python
+# Change myapp to the name of the app where you extend EmailCustom
+CUSTOM_USER_MODEL = 'myapp.User'
+AUTHENTICATION_BACKENDS = [
+    'custom_user.backends.EmailBackend',
+]
+```
+
+
+  *
+
 
 
 # Settings
@@ -21,10 +58,12 @@ If you want to re-add the the django contrib user, you can do that by re-registe
 
 If you want fine-grained control over the admin you can subclass the CustomUser module:
 
-   from custom_user.admin import UserAdmin
+```python
+from custom_user.admin import UserAdmin
 
-   class MyUserAdmin(UserAdmin):
-       # Your code here
-       pass
+class MyUserAdmin(UserAdmin):
+   # Your code here
+   pass
 
-   admin.site.register(MyUser, MyUserAdmin)
+admin.site.register(MyUser, MyUserAdmin)
+```

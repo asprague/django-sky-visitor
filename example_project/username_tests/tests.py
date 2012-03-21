@@ -1,6 +1,4 @@
-from custom_user.forms import EmailLoginForm, LoginForm
-from django.conf import settings
-from django.test import TestCase
+from custom_user.forms import LoginForm
 from example_project.tests import BaseTestCase
 
 

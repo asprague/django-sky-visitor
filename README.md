@@ -6,6 +6,9 @@ ADD TO README:
   * Subclassing: always does an inner join on your table and the auth.user table.
   * Version 0.1.0 -- In development
   * Fix pip package path
+  * Many pages pass error messages around using the messages framework. You should have it enabled on all custom_user templates.
+  * Info about auto login after the password reset completes
+  * Step by step of password reset process and how it works
 
 # Features
 

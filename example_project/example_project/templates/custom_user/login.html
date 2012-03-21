@@ -1,9 +1,18 @@
 <h1>Login</h1>
 
+{% if messages %}
+    <h2>Messages:</h2>
+    <ul>
+        {% for message in messages %}
+            <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 <form method="post">
-{{ form.as_p }}
-{% csrf_token %}
-<button type="submit">Submit</button>
+    {{ form.as_p }}
+    {% csrf_token %}
+    <button type="submit">Submit</button>
 </form>
 
 <a href="{% url forgot_password %}">Forgot Password?</a>

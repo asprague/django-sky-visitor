@@ -91,12 +91,15 @@ class SetPasswordForm(auth_forms.SetPasswordForm):
     new_password1 = PasswordRulesField(label=_("New password"))
 
 
-# Borrowed from core so we can define our own inheritance
+# Borrowed from django.contrib.auth so we can define our own inheritance
 class PasswordChangeForm(SetPasswordForm):
     """
     A form that lets a user change his/her password by entering
     their old password.
     """
+    error_messages = dict(SetPasswordForm.error_messages, **{
+        'password_incorrect': _("Your old password was entered incorrectly. Please enter it again."),
+    })
     old_password = forms.CharField(label=_("Old password"), widget=forms.PasswordInput)
 
     def clean_old_password(self):
@@ -105,7 +108,7 @@ class PasswordChangeForm(SetPasswordForm):
         """
         old_password = self.cleaned_data["old_password"]
         if not self.user.check_password(old_password):
-            raise forms.ValidationError(_("Your old password was entered incorrectly. Please enter it again."))
+            raise forms.ValidationError(self.error_messages['password_incorrect'])
         return old_password
 PasswordChangeForm.base_fields.keyOrder = ['old_password', 'new_password1', 'new_password2']
 

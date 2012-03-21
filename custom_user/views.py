@@ -19,6 +19,7 @@ from django.views.generic.edit import FormView, UpdateView
 from custom_user.backends import auto_login
 from custom_user.forms import EmailLoginForm, InvitationForm, SetPasswordForm, InvitationCompleteForm, ProfileEditForm, LoginForm, PasswordResetForm
 from custom_user.utils import SubclassedUser as User, is_email_only
+from django.contrib.auth.models import User as AuthUser
 from django.conf import settings
 
 # Originally from: https://github.com/stefanfoulis/django-class-based-auth-views/blob/develop/class_based_auth_views/views.py
@@ -149,6 +150,7 @@ class TokenValidateMixin(object):
     token_generator = default_token_generator
     display_message_on_invalid_token = True
     is_token_valid = False
+    invalid_token_message = "This one-time use URL has already been used. Try to login or use the forgot password form."
 
     def get_token_generator(self):
         return self.token_generator
@@ -159,17 +161,19 @@ class TokenValidateMixin(object):
         assert uidb36 is not None and token is not None # checked by URLconf
         try:
             uid_int = base36_to_int(uidb36)
-            self._user = User.objects.get(id=uid_int)
-        except (ValueError, User.DoesNotExist):
+            # Get an AuthUser instance here since we don't need any of the extra aspects of the SubclassedUser
+            self._user = AuthUser.objects.get(id=uid_int)
+        except (ValueError, AuthUser.DoesNotExist):
             self._user = None
         self.is_token_valid = (self._user is not None and self.get_token_generator().check_token(self._user, token))
         if not self.is_token_valid:
-            self.token_invalid(request, *args, **kwargs)
+            return self.token_invalid(request, *args, **kwargs)
         return super(TokenValidateMixin, self).dispatch(request, *args, **kwargs)
 
     def token_invalid(self, request, *args, **kwargs):
         if self.display_message_on_invalid_token:
-            messages.error(request, "Invalid URL token. Your probably already have an account. Please try to login. Please return to the home page and try again.", fail_silently=True)
+            messages.error(request, self.invalid_token_message, fail_silently=True)
+        return HttpResponseRedirect(reverse('login'))
 
 
 class InvitationCompleteView(TokenValidateMixin, UpdateView):
@@ -178,6 +182,7 @@ class InvitationCompleteView(TokenValidateMixin, UpdateView):
     context_object_name = 'invited_user'
     auto_login_on_success = True
     template_name = 'custom_user/invite_complete.html'
+    invalid_token_message = "This one-time use invite URL has already been used. This means you have likely already created an account. Please try to login or use the forgot password form."
     # Since this is an UpdateView, the defautl success_url will be the user's get_absolute_url(). Override if you'd like different behavior
 
     def get_object(self, queryset=None):
@@ -188,10 +193,6 @@ class InvitationCompleteView(TokenValidateMixin, UpdateView):
             return super(InvitationCompleteView, self).post(request, *args, **kwargs)
         else:
             return self.get(request, *args, **kwargs)
-
-    def token_invalid(self, request, *args, **kwargs):
-        if self.display_message_on_invalid_token:
-            messages.error(request, "Invalid invite URL. Please request another invite.", fail_silently=True)
 
     def form_valid(self, form):
         context = self.get_context_data()
@@ -234,10 +235,11 @@ class InvitationCompleteView(TokenValidateMixin, UpdateView):
 
 
 class LogoutView(RedirectView):
+    success_message = "Successfully logged out."
 
     def get(self, request, *args, **kwargs):
         logout(request)
-        messages.success(request, "Successfully logged out", fail_silently=True)
+        messages.success(request, self.success_message, fail_silently=True)
         return super(LogoutView, self).get(request, *args, **kwargs)
 
     def get_redirect_url(self, **kwargs):
@@ -256,10 +258,10 @@ class ForgotPasswordView(SendTokenEmailMixin, FormView):
     def get_email_kwargs(self, user):
         kwargs = super(ForgotPasswordView, self).get_email_kwargs(user)
         domain = self.request.get_host()
-        kwargs['email_template_name'] = 'custom_user/password_reset_email.html'
+        kwargs['email_template_name'] = 'custom_user/forgot_password_email.html'
         kwargs['token_view_name'] = 'forgot_password_change'
         kwargs['domain'] = domain
-        kwargs['subject'] = "Password reset on %s" % domain    #get_current_site(self.request)
+        kwargs['subject'] = "Password reset for %s" % domain    #get_current_site(self.request)
         return kwargs
 
     def get_success_url(self):
@@ -269,6 +271,8 @@ class ForgotPasswordView(SendTokenEmailMixin, FormView):
 class ForgotPasswordChangeView(TokenValidateMixin, FormView):
     form_class = SetPasswordForm
     template_name = 'custom_user/forgot_password_change.html'
+    invalid_token_message = "Invalid reset password link. Please reset your password again."
+    auto_login_on_success = True
 
     def get_form_kwargs(self):
         kwargs = super(ForgotPasswordChangeView, self).get_form_kwargs()
@@ -284,19 +288,21 @@ class ForgotPasswordChangeView(TokenValidateMixin, FormView):
     def form_valid(self, form):
         if self.is_token_valid:
             form.save()
+            auto_login(self.request, self._user)
         return super(ForgotPasswordChangeView, self).form_valid(form)
 
-    def token_invalid(self, request, *args, **kwargs):
-        if self.display_message_on_invalid_token:
-            messages.error(request, "Invalid reset password link. Please reset your password again.", fail_silently=True)
+    def get_success_url(self):
+        if not self.success_url:
+            return settings.CUSTOM_USER_AFTER_LOGIN_REDIRECT_URL
 
 class ProfileEditView(UpdateView):
     model = User
     form_class = ProfileEditForm
+    success_message = "Profile succesfully updated."
 
     def get_object(self, queryset=None):
         return self.request.user
 
     def form_valid(self, form):
-        messages.success(self.request, "Profile succesfully updated.", fail_silently=True)
+        messages.success(self.request, self.success_message, fail_silently=True)
         return super(ProfileEditView, self).form_valid(form)

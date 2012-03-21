@@ -13,7 +13,7 @@ AUTHENTICATION_BACKENDS = [
     'custom_user.backends.EmailBackend',
 ]
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'example_project',
     'custom_user',
 
@@ -24,7 +24,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-)
+]
 
 
 

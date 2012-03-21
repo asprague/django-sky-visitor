@@ -62,7 +62,7 @@ class TokenTemplateEmail(object):
         context_data = {
             'email': self.user.email,
             'domain': self.get_domain(),
-            'site_name': self.get_site_name,
+            'site_name': self.get_site_name(),
             'uid': int_to_base36(self.user.id),
             'user': self.user,
             'token': self.get_token_generator().make_token(self.user),

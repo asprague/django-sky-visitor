@@ -255,9 +255,11 @@ class ForgotPasswordView(SendTokenEmailMixin, FormView):
 
     def get_email_kwargs(self, user):
         kwargs = super(ForgotPasswordView, self).get_email_kwargs(user)
+        domain = self.request.get_host()
         kwargs['email_template_name'] = 'custom_user/password_reset_email.html'
         kwargs['token_view_name'] = 'forgot_password_change'
-        kwargs['subject'] = "Password reset on %s" % get_current_site(self.request)
+        kwargs['domain'] = domain
+        kwargs['subject'] = "Password reset on %s" % domain    #get_current_site(self.request)
         return kwargs
 
     def get_success_url(self):

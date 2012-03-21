@@ -21,7 +21,7 @@ from custom_user.forms import EmailLoginForm, InvitationForm, SetPasswordForm, I
 from custom_user.utils import SubclassedUser as User, is_email_only
 from django.conf import settings
 
-# Derived from: https://github.com/stefanfoulis/django-class-based-auth-views/blob/develop/class_based_auth_views/views.py
+# Originally from: https://github.com/stefanfoulis/django-class-based-auth-views/blob/develop/class_based_auth_views/views.py
 class LoginView(FormView):
     """
     This is a class based version of django.contrib.auth.views.login.
@@ -256,6 +256,7 @@ class ForgotPasswordView(SendTokenEmailMixin, FormView):
     def get_email_kwargs(self, user):
         kwargs = super(ForgotPasswordView, self).get_email_kwargs(user)
         kwargs['email_template_name'] = 'custom_user/password_reset_email.html'
+        kwargs['token_view_name'] = 'forgot_password_change'
         kwargs['subject'] = "Password reset on %s" % get_current_site(self.request)
         return kwargs
 

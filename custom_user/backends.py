@@ -6,7 +6,9 @@ from custom_user.utils import SubclassedUser as User
 
 # Reference: http://groups.google.com/group/django-users/browse_thread/thread/39488db1864c595f
 def auto_login(request, user):
-    # TODO TEST: this process
+    """
+    Allows you to fake a login in your code
+    """
     user.backend = 'custom_user.backends.BaseBackend'
     login(request, user)
 

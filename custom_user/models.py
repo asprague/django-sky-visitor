@@ -39,8 +39,6 @@ class CustomUser(auth_models.User):
         abstract = True
 
     def save(self, *args, **kwargs):
-        if not self.pk:
-            self._newly_created = True
         super(CustomUser, self).save(*args, **kwargs)
 
 
@@ -98,24 +96,24 @@ class EmailCustomUser(CustomUser):
     class Meta:
         abstract = True
 
-    def save(self, *args, **kwargs):
+    def save(self, allow_email_uniqueness_validation=True, *args, **kwargs):
         if not self.pk and not self.username:
             self.username = get_uuid_username()
-        if not self.pk or True:
-            # If this is a new model or the email address has changed, validate it.
+        if allow_email_uniqueness_validation:
             self.validate_email_is_unique()
         super(EmailCustomUser, self).save(*args, **kwargs)
 
     def validate_email_is_unique(self, force_validation=False):
         from custom_user.utils import SubclassedUser as User
         if self.validate_email_uniqueness or force_validation:
-            if User.objects.filter(~Q(id=self.id), email__iexact=self.email).exists:
-                raise ValidationError(_("This email address is already in use. Please supply a different email address."))
+            if User.objects.filter(email__iexact=self.email).exclude(id=self.id).exists():
+                raise ValidationError({'email': _("This email address is already in use. Please supply a different email address.")})
 
     def clean(self):
         """
         Validate uniqueness of the email address here. If you're concerned about the extra query and any perforamce issues,
         you can disable this by settings `validate_email_uniqueness` to False and handling uniqueness yourself.
         """
-        self.validate_email_uniqueness()
+        self.validate_email_is_unique()
+
 

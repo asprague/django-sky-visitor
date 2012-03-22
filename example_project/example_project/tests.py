@@ -11,10 +11,6 @@ from example_project.models import User
 USER_EMAIL = 'user@example.com'
 USER_PASS = 'adminadmin'
 
-# TODO TEST: create_user process works with create_user and create_user_by_email
-# TODO TEST: That unique email addresses are enforced at the model create level
-
-
 class BaseTestCase(TestCase):
 
     def assertLoggedIn(self, user, backend=None):
@@ -55,10 +51,7 @@ class TestEmailLoginForm(BaseTestCase):
 
 class TestForgotPasswordProcess(BaseTestCase):
 
-    # TODO TEST: If an invalid email is entered into the forgot password form
-    # TODO TEST: Token should be invalid after it is used once
     # TODO TEST: Token older than X weeks (will require removing hard coded reset URL)
-
 
     def _get_password_reset_url(self, user=None, with_host=True):
         if user is None:
@@ -91,7 +84,9 @@ class TestForgotPasswordProcess(BaseTestCase):
 
     def test_reset_password_form_should_success_with_valid_input(self):
         response = self.client.get(self._get_password_reset_url())
+        # Should succeed and have the appropraite form on the page
         self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context_data['form'], SetPasswordForm)
 
         new_pass = 'asdfasdf'
         data = {
@@ -106,6 +101,11 @@ class TestForgotPasswordProcess(BaseTestCase):
         self.assertTrue(user.check_password(new_pass))
         # Should automatically log the user in
         self.assertLoggedIn(user, backend='custom_user.backends.BaseBackend')
+
+        # Now log the user out and make sure that reset link doesn't work anymore
+        self.client.logout()
+        response2 = self.client.get(self._get_password_reset_url(), follow=True)
+        self.assertRedirects(response2, '/user/login/')
 
     def test_reset_password_form_should_fail_with_invalid_token(self):
         # Should work fine for normal URL

@@ -3,6 +3,7 @@ import datetime
 from django.contrib.auth import models as auth_models
 from django.db.models.query_utils import Q
 from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 
 # Truncate the UUID for usernames a bit shorter so it is easier to use as a slug if needed
 from django.core.exceptions import ValidationError
@@ -55,29 +56,20 @@ class EmailUserManager(UserManager):
             email = username
         return self.create_user_by_email(email=email, password=password)
 
-    def create_user_by_email(self, email, password=None, commit=True):
+    def create_user_by_email(self, email, password=None):
         """
         Creates and saves a User with the given username, e-mail and password.
         """
-        username = None
-        now = datetime.datetime.now()
-
-        # Normalize the address by lowercasing the domain part of the email
-        # address.
-        try:
-            email_name, domain_part = email.strip().split('@', 1)
-        except ValueError:
-            pass
-        else:
-            email = '@'.join([email_name, domain_part.lower()])
-
-        user = self.model(username=username, email=email, is_staff=False,
-                         is_active=True, is_superuser=False, last_login=now,
-                         date_joined=now)
-
+        username = None  # Set to None here, automatically set in the model save method
+        now = timezone.now()
+        if not email:
+            raise ValueError('An email address must be set')
+        email = EmailUserManager.normalize_email(email)
+        user = self.model(username=username, email=email,
+                          is_staff=False, is_active=True, is_superuser=False,
+                          last_login=now, date_joined=now)
         user.set_password(password)
-        if commit:
-            user.save(using=self._db)
+        user.save(using=self._db)
         return user
 
 class EmailCustomUser(CustomUser):

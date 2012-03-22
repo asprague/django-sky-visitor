@@ -27,9 +27,9 @@ class TestEmailLoginForm(BaseTestCase):
     # TODO TEST: Login process works
 
 
-class TestForgotPasswordForm(BaseTestCase):
+class TestForgotPasswordProcess(BaseTestCase):
 
-    def test_forgot_password_form(self):
+    def test_forgot_password_form_should_send_email(self):
         response = self.client.get('/user/forgot_password/')
         self.assertEqual(response.status_code, 200)
 
@@ -42,7 +42,7 @@ class TestForgotPasswordForm(BaseTestCase):
         self.assertEqual(message.subject, 'Password reset for testserver')
         self.assertIn(ADMIN_RESET_URL, message.body)
 
-    def test_reset_password(self):
+    def test_reset_password_form_should_success_with_valid_input(self):
         response = self.client.get(ADMIN_RESET_URL)
         self.assertEqual(response.status_code, 200)
 
@@ -62,6 +62,14 @@ class TestForgotPasswordForm(BaseTestCase):
         self.assertEqual(self.client.session['_auth_user_id'], user.id)
         self.assertEqual(self.client.session['_auth_user_backend'], 'custom_user.backends.BaseBackend')
 
+    def test_reset_password_form_should_fail_with_invalid_token(self):
+        # Should work fine for normal URL
+        response = self.client.get(ADMIN_RESET_URL)
+        self.assertEqual(response.status_code, 200)
+        # User ID of this token is modified
+        response = self.client.get('http://testserver/user/forgot_password/2-35t-5af9e199449e388d0982/', follow=True)
+        self.assertRedirects(response, '/user/login/')
+        # Token modified
+        response = self.client.get('http://testserver/user/forgot_password/1-35t-5af9e199449e388d0981/', follow=True)
+        self.assertRedirects(response, '/user/login/')
 
-    # TODO TEST: tampered URL
-    # TODO TEST: invalid token url

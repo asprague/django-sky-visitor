@@ -77,3 +77,4 @@ admin.site.register(MyUser, MyUserAdmin)
 
   * Implement `LOGOUT_REDIRECT_URL`
   * Better built in password rules. Options for extending the password rules.
+  * Refactor token URL generation to `utils.py`

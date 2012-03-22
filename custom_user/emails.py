@@ -1,5 +1,5 @@
-from custom_user.tokens import default_token_generator
 from django.conf import settings
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
 from django.core.exceptions import ImproperlyConfigured
 from django.core.mail import send_mail
@@ -54,11 +54,12 @@ class TokenTemplateEmail(object):
         return self.domain
 
     def get_site_name(self):
+        """
+        Used in the default email template to provide a more verbose name for your site. Defaults to the domain.
+        """
         return self.get_domain()
 
     def get_context_data(self):
-        """
-        """
         context_data = {
             'email': self.user.email,
             'domain': self.get_domain(),

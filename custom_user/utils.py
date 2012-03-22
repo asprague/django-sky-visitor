@@ -30,3 +30,4 @@ SubclassedUser = get_user_model()
 
 def is_email_only():
     return SubclassedUser._is_email_only
+

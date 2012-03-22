@@ -1,22 +1,25 @@
-from custom_user.forms import EmailLoginForm, LoginForm
-from custom_user.views import LoginView
+from custom_user.forms import EmailLoginForm
 from django.conf import settings
 from django.contrib.auth.models import User as AuthUser
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import RequestFactory
-from django.test.utils import override_settings
 
-ADMIN_EMAIL = 'admin@admin.com'
+ADMIN_EMAIL = 'admin@example.com'
 ADMIN_PASS = 'admin'
-ADMIN_RESET_URL = 'http://testserver/user/forgot_password/1-35t-5af9e199449e388d0982/'
+ADMIN_RESET_URL = 'http://testserver/user/forgot_password/1-35t-d4e092280eb134000672/'
 
 class BaseTestCase(TestCase):
     pass
 
 
+# TODO TEST: create_user process works with create_user and create_user_by_email
+# TODO TEST: That unique email addresses are enforced at the model create level
+
+
 class TestEmailLoginForm(BaseTestCase):
+
+    # TODO TEST: Login process works
 
     def test_login_form_should_be_email_based(self):
         response = self.client.get('/user/login/')
@@ -24,10 +27,11 @@ class TestEmailLoginForm(BaseTestCase):
         form = response.context_data['form']
         self.assertIsInstance(form, EmailLoginForm)
 
-    # TODO TEST: Login process works
-
 
 class TestForgotPasswordProcess(BaseTestCase):
+
+    # TODO TEST: If an invalid email is entered into the forgot password form
+    # TODO TEST: Token should be invalid after it is used once
 
     def test_forgot_password_form_should_send_email(self):
         response = self.client.get('/user/forgot_password/')
@@ -67,9 +71,9 @@ class TestForgotPasswordProcess(BaseTestCase):
         response = self.client.get(ADMIN_RESET_URL)
         self.assertEqual(response.status_code, 200)
         # User ID of this token is modified
-        response = self.client.get('http://testserver/user/forgot_password/2-35t-5af9e199449e388d0982/', follow=True)
+        response = self.client.get('http://testserver/user/forgot_password/2-35t-d4e092280eb134000672/', follow=True)
         self.assertRedirects(response, '/user/login/')
         # Token modified
-        response = self.client.get('http://testserver/user/forgot_password/1-35t-5af9e199449e388d0981/', follow=True)
+        response = self.client.get('http://testserver/user/forgot_password/1-35t-d4e092280eb134000671/', follow=True)
         self.assertRedirects(response, '/user/login/')
 

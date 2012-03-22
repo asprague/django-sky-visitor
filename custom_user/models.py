@@ -2,9 +2,6 @@ import uuid
 import datetime
 from django.contrib.auth import models as auth_models
 
-## This User class will always be the subclassed User that is defined by CUSTOM_USER_MODEL in settings
-#User = get_user_model()
-
 # Truncate the UUID for usernames a bit shorter so it is easier to use as a slug if needed
 USERNAME_LENGTH = 10
 
@@ -22,47 +19,8 @@ def get_uuid_username():
     return username
 
 
-# TODO: move these to managers.py
 class UserManager(auth_models.UserManager):
     pass
-
-class EmailUserManager(UserManager):
-
-    # TODO: Make email unique if they use create_user() as well
-
-    def create_user_by_email(self, email, password=None, is_active=True, commit=True):
-        """
-        Creates and saves a User with the given username, e-mail and password.
-        """
-        # TODO: Make this the default way of creating a user (override create_user) and determine whether it is by email based on settings
-        username = None
-        now = datetime.datetime.now()
-
-        # Normalize the address by lowercasing the domain part of the email
-        # address.
-        try:
-            email_name, domain_part = email.strip().split('@', 1)
-        except ValueError:
-            pass
-        else:
-            email = '@'.join([email_name, domain_part.lower()])
-
-        user = self.model(username=username, email=email, is_staff=False,
-                         is_active=is_active, is_superuser=False, last_login=now,
-                         date_joined=now)
-
-        user.set_password(password)
-        if commit:
-            user.save(using=self._db)
-        return user
-
-    def create_unactivated_user(self, email, commit=True):
-        """
-        Caller is responsible for sending an email or otherwise providing the user with a way to activate the account
-        """
-        # TODO: This function is excessive. Find instances of it and replace it with a more straight forward call
-        return self.create_user_by_email(email, is_active=False, commit=commit)
-
 
 class CustomUser(auth_models.User):
     """
@@ -81,6 +39,44 @@ class CustomUser(auth_models.User):
             self._newly_created = True
         super(CustomUser, self).save(*args, **kwargs)
 
+
+
+class EmailUserManager(UserManager):
+
+    def create_user(self, username, email=None, password=None):
+        """
+        Squash the normal create_user method and use our create_user_by_email method.
+
+        Username will be ignored unless email is None, then username will be used as the email address
+        """
+        if email is None and '@' in username:
+            email = username
+        return self.create_user_by_email(email=email, password=password)
+
+    def create_user_by_email(self, email, password=None, commit=True):
+        """
+        Creates and saves a User with the given username, e-mail and password.
+        """
+        username = None
+        now = datetime.datetime.now()
+
+        # Normalize the address by lowercasing the domain part of the email
+        # address.
+        try:
+            email_name, domain_part = email.strip().split('@', 1)
+        except ValueError:
+            pass
+        else:
+            email = '@'.join([email_name, domain_part.lower()])
+
+        user = self.model(username=username, email=email, is_staff=False,
+                         is_active=True, is_superuser=False, last_login=now,
+                         date_joined=now)
+
+        user.set_password(password)
+        if commit:
+            user.save(using=self._db)
+        return user
 
 class EmailCustomUser(CustomUser):
     """

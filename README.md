@@ -1,6 +1,6 @@
 Extension to the django authentication/user system.
 
-ADD TO README:
+ADD TO DOCS:
 
   * Benefits of subclassing: easier to write queries on our end.
   * Subclassing: always does an inner join on your table and the auth.user table.
@@ -9,6 +9,7 @@ ADD TO README:
   * Many pages pass error messages around using the messages framework. You should have it enabled on all custom_user templates.
   * Info about auto login after the password reset completes
   * Step by step of password reset process and how it works
+  * Don't create users with createsuperuser or django.contrib.auth.models.User.create_user() because there won't be a proper entry in the subclassed user table for them
 
 # Features
 

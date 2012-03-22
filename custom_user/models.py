@@ -78,6 +78,9 @@ class EmailCustomUser(CustomUser):
     """
     _is_email_only = True
     validate_email_uniqueness = True
+    error_messages = {
+        'unique_email': _("This email address is already in use. Please supply a different email address."),
+    }
 
     # Redefining objects is needed because of our subclassing. Weird quirk. Any subclass of this model also needs to define BaseUserManager as well.
     objects = EmailUserManager()
@@ -99,7 +102,7 @@ class EmailCustomUser(CustomUser):
         from custom_user.utils import SubclassedUser as User
         if self.validate_email_uniqueness or force_validation:
             if User.objects.filter(email__iexact=self.email).exclude(id=self.id).exists():
-                raise ValidationError({'email': _("This email address is already in use. Please supply a different email address.")})
+                raise ValidationError({'email': self.error_messages['unique_email']})
 
     def clean(self):
         """

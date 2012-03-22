@@ -71,3 +71,7 @@ class MyUserAdmin(UserAdmin):
 
 admin.site.register(MyUser, MyUserAdmin)
 ```
+
+# TODO
+
+  * Implement `LOGOUT_REDIRECT_URL`

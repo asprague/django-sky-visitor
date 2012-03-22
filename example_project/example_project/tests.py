@@ -21,6 +21,10 @@ class BaseTestCase(TestCase):
         if backend:
             self.assertEqual(self.client.session['_auth_user_backend'], backend)
 
+    def assertRedirected(self, response, expected_url, status_code=302):
+        self.assertEqual(response.status_code, status_code)
+        self.assertEqual(response._headers['location'][1], 'http://testserver%s' % expected_url)
+
 
 class TestEmailLoginForm(BaseTestCase):
 
@@ -40,7 +44,7 @@ class TestEmailLoginForm(BaseTestCase):
         # Should be logged in
         self.assertLoggedIn(user, backend='custom_user.backends.EmailBackend')
         # Should redirect
-
+        self.assertRedirected(response, '/')
 
 
 class TestForgotPasswordProcess(BaseTestCase):
@@ -71,10 +75,9 @@ class TestForgotPasswordProcess(BaseTestCase):
             'new_password2': new_pass,
         }
         response = self.client.post(USER_RESET_URL, data)
-        # Should redirect to '/accounts/'
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response._headers['location'][1], 'http://testserver/')
         user = AuthUser.objects.get(email=USER_EMAIL)
+        # Should redirect to '/'
+        self.assertRedirected(response, '/')
         # Should have a new password
         self.assertTrue(user.check_password(new_pass))
         # Should automatically log the user in

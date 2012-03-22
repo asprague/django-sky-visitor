@@ -4,17 +4,22 @@ from django.contrib.auth.models import User as AuthUser
 from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from example_project.models import User
 
 USER_EMAIL = 'user@example.com'
 USER_PASS = 'adminadmin'
 USER_RESET_URL = 'http://testserver/user/forgot_password/1-35t-d4e092280eb134000672/'
 
-class BaseTestCase(TestCase):
-    pass
-
-
 # TODO TEST: create_user process works with create_user and create_user_by_email
 # TODO TEST: That unique email addresses are enforced at the model create level
+
+
+class BaseTestCase(TestCase):
+
+    def assertLoggedIn(self, user, backend=None):
+        self.assertEqual(self.client.session['_auth_user_id'], user.id)
+        if backend:
+            self.assertEqual(self.client.session['_auth_user_backend'], backend)
 
 
 class TestEmailLoginForm(BaseTestCase):
@@ -24,6 +29,17 @@ class TestEmailLoginForm(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         form = response.context_data['form']
         self.assertIsInstance(form, EmailLoginForm)
+
+    def test_login_form_should_succeed(self):
+        data = {
+            'email': USER_EMAIL,
+            'password': USER_PASS,
+        }
+        response = self.client.post('/user/login/', data)
+        user = User.objects.get(email=USER_EMAIL)
+        # Should be logged in
+        self.assertLoggedIn(user, backend='custom_user.backends.EmailBackend')
+        # Should redirect
 
 
 
@@ -55,15 +71,14 @@ class TestForgotPasswordProcess(BaseTestCase):
             'new_password2': new_pass,
         }
         response = self.client.post(USER_RESET_URL, data)
-        # Should redirect to '/'
+        # Should redirect to '/accounts/'
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response._headers['location'][1], 'http://testserver/')
         user = AuthUser.objects.get(email=USER_EMAIL)
         # Should have a new password
         self.assertTrue(user.check_password(new_pass))
         # Should automatically log the user in
-        self.assertEqual(self.client.session['_auth_user_id'], user.id)
-        self.assertEqual(self.client.session['_auth_user_backend'], 'custom_user.backends.BaseBackend')
+        self.assertLoggedIn(user, backend='custom_user.backends.BaseBackend')
 
     def test_reset_password_form_should_fail_with_invalid_token(self):
         # Should work fine for normal URL

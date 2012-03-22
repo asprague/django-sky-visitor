@@ -9,6 +9,7 @@ TEMPLATE_DEBUG = DEBUG
 ###
 
 CUSTOM_USER_MODEL = 'example_project.User'
+LOGIN_REDIRECT_URL = '/'
 AUTHENTICATION_BACKENDS = [
     'custom_user.backends.EmailBackend',
 ]
@@ -25,8 +26,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin',
 ]
-
-
 
 
 

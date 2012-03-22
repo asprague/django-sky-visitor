@@ -3,15 +3,10 @@ from custom_user.emails import TokenTemplateEmail
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, login, logout
 from django.contrib.auth.tokens import default_token_generator
-from django.contrib.sites.models import get_current_site
-from django.core.exceptions import ImproperlyConfigured
-from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.template import loader
-from django.template.context import Context
 from django.utils.decorators import method_decorator
-from django.utils.http import base36_to_int, int_to_base36
+from django.utils.http import base36_to_int
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import RedirectView
@@ -293,7 +288,7 @@ class ForgotPasswordChangeView(TokenValidateMixin, FormView):
 
     def get_success_url(self):
         if not self.success_url:
-            return settings.CUSTOM_USER_AFTER_LOGIN_REDIRECT_URL
+            return settings.LOGIN_REDIRECT_URL
 
 class ProfileEditView(UpdateView):
     model = User

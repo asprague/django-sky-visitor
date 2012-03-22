@@ -10,6 +10,7 @@ ADD TO DOCS:
   * Info about auto login after the password reset completes
   * Step by step of password reset process and how it works
   * Don't create users with createsuperuser or django.contrib.auth.models.User.create_user() because there won't be a proper entry in the subclassed user table for them
+  * On EmailCustomUser you can set `validate_email_uniqeness` to false if you're concerned about the extra database query for each call to clean()
 
 # Features
 

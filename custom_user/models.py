@@ -1,8 +1,12 @@
 import uuid
 import datetime
 from django.contrib.auth import models as auth_models
+from django.db.models.query_utils import Q
+from django.utils.translation import ugettext_lazy as _
 
 # Truncate the UUID for usernames a bit shorter so it is easier to use as a slug if needed
+from django.core.exceptions import ValidationError
+
 USERNAME_LENGTH = 10
 
 def get_uuid_username_string():
@@ -83,6 +87,7 @@ class EmailCustomUser(CustomUser):
     Inherit fromt his class if you'd like to have an "email only" user and hide usernames
     """
     _is_email_only = True
+    validate_email_uniqueness = True
 
     # Redefining objects is needed because of our subclassing. Weird quirk. Any subclass of this model also needs to define BaseUserManager as well.
     objects = EmailUserManager()
@@ -96,9 +101,21 @@ class EmailCustomUser(CustomUser):
     def save(self, *args, **kwargs):
         if not self.pk and not self.username:
             self.username = get_uuid_username()
+        if not self.pk or True:
+            # If this is a new model or the email address has changed, validate it.
+            self.validate_email_is_unique()
         super(EmailCustomUser, self).save(*args, **kwargs)
 
+    def validate_email_is_unique(self, force_validation=False):
+        from custom_user.utils import SubclassedUser as User
+        if self.validate_email_uniqueness or force_validation:
+            if User.objects.filter(~Q(id=self.id), email__iexact=self.email).exists:
+                raise ValidationError(_("This email address is already in use. Please supply a different email address."))
 
-
-
+    def clean(self):
+        """
+        Validate uniqueness of the email address here. If you're concerned about the extra query and any perforamce issues,
+        you can disable this by settings `validate_email_uniqueness` to False and handling uniqueness yourself.
+        """
+        self.validate_email_uniqueness()
 

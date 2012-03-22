@@ -8,20 +8,20 @@ from custom_user.utils import SubclassedUser as User
 from custom_user.forms import UniqueRequiredEmailField
 
 
-class BaseTest(TestCase):
+class BaseTestCase(TestCase):
     pass
 
 
-class UniqueEmailTest(TestCase):
+class UniqueEmailTest(BaseTestCase):
     def should_error_on_duplicate_email(self):
         nonunique_email = 'nonunique@example.com'
-        first_user = User.objects.create_user('nonunique_user', email=nonunique_email, password='asdf')
+        first_user = User.objects.create_user(nonunique_email, password='asdf')
         field = UniqueRequiredEmailField()
 
         self.assertRaises(ValidationError, field.clean, nonunique_email)
 
 
-class InviteUserTests(BaseTest):
+class InviteUserTests(BaseTestCase):
 
     def setUp(self):
         pass

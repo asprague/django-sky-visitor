@@ -10,12 +10,21 @@ from django.utils.http import base36_to_int
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import RedirectView
-from django.views.generic.edit import FormView, UpdateView
+from django.views.generic.edit import FormView, UpdateView, CreateView
 from custom_user.backends import auto_login
 from custom_user.forms import EmailLoginForm, InvitationForm, SetPasswordForm, InvitationCompleteForm, ProfileEditForm, LoginForm, PasswordResetForm
 from custom_user.utils import SubclassedUser as User, is_email_only
 from django.contrib.auth.models import User as AuthUser
 from django.conf import settings
+
+class RegisterView(CreateView):
+    model = User
+
+    def get_form_class(self):
+        if is_email_only():
+            return EmailRegisterForm
+        else:
+            return RegisterForm
 
 # Originally from: https://github.com/stefanfoulis/django-class-based-auth-views/blob/develop/class_based_auth_views/views.py
 class LoginView(FormView):

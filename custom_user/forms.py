@@ -1,29 +1,65 @@
 from django import forms
 from django.conf import settings
 from django.contrib.auth import forms as auth_forms, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.hashers import UNUSABLE_PASSWORD
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User as AuthUser
 from custom_user.utils import SubclassedUser as User
 from custom_user.fields import UniqueRequiredEmailField, PasswordRulesField
 
 
-# All user forms should inherit from this form to make sure email is unique
-class BaseUserCreateForm(forms.ModelForm):
-    # TODO: Make email and non-email version
-    email = UniqueRequiredEmailField()
-
-    class Meta:
-        model = User
-        fields = ['first_name', 'last_name', 'email',]
-
+class NameRequiredMixin(object):
     def __init__(self, *args, **kwargs):
-        super(BaseUserCreateForm, self).__init__(*args, **kwargs)
-
+        super(NameRequiredMixin, self).__init__(*args, **kwargs)
         if 'first_name' in self.fields and 'last_name' in self.fields:
             self.fields['first_name'].required = True
             self.fields['last_name'].required = True
+
+
+class RegisterBasicForm(auth_forms.UserCreationForm):
+    """
+    Use the default contrib.auth form here and change the model to our SubclassedUser
+    """
+    class Meta:
+        model = User
+        fields = ['username',]
+
+class RegisterForm(RegisterBasicForm):
+    """
+    Add email to the basic register form because the is a more common use case
+    """
+    class Meta:
+        model = User
+        fields = ['username', 'email']
+
+class EmailRegisterForm(forms.ModelForm):
+    error_messages = {
+        'password_mismatch': _("The two password fields didn't match."),
+    }
+    email = UniqueRequiredEmailField()
+    password1 = forms.CharField(label=_("Password"),
+        widget=forms.PasswordInput)
+    password2 = forms.CharField(label=_("Password confirmation"),
+        widget=forms.PasswordInput,
+        help_text = _("Enter the same password as above, for verification."))
+
+    class Meta:
+        model = User
+        fields = ['email',]
+
+    def clean_password2(self):
+        password1 = self.cleaned_data.get("password1", "")
+        password2 = self.cleaned_data["password2"]
+        if password1 != password2:
+            raise forms.ValidationError(
+                self.error_messages['password_mismatch'])
+        return password2
+
+    def save(self, commit=True):
+        user = super(EmailRegisterForm, self).save(commit=False)
+        user.set_password(self.cleaned_data["password1"])
+        if commit:
+            user.save()
+        return user
 
 class UserCreateAdminForm(forms.ModelForm):
     # TODO: Make email and non-email version
@@ -74,9 +110,13 @@ class RegisterForm(auth_forms.UserCreationForm):
         fields = ['username', 'email',]
 
 
-class InvitationForm(BaseUserCreateForm):
+class InvitationForm(forms.ModelForm):
     # TODO: Make email and non-email version
     email = UniqueRequiredEmailField()
+
+    class Meta:
+        model = User
+        fields = ['email',]
 
     def save(self, commit=True):
         user = super(InvitationForm, self).save(commit=False)

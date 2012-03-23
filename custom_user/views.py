@@ -12,13 +12,16 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from custom_user.backends import auto_login
-from custom_user.forms import EmailLoginForm, InvitationForm, SetPasswordForm, InvitationCompleteForm, ProfileEditForm, LoginForm, PasswordResetForm
+from custom_user.forms import *
 from custom_user.utils import SubclassedUser as User, is_email_only
 from django.contrib.auth.models import User as AuthUser
 from django.conf import settings
 
 class RegisterView(CreateView):
     model = User
+    template_name = 'custom_user/register.html'
+    success_message = _("Successfully registered")
+    # TODO: Finish implementing this view
 
     def get_form_class(self):
         if is_email_only():
@@ -186,7 +189,7 @@ class InvitationCompleteView(TokenValidateMixin, UpdateView):
     context_object_name = 'invited_user'
     auto_login_on_success = True
     template_name = 'custom_user/invite_complete.html'
-    invalid_token_message = "This one-time use invite URL has already been used. This means you have likely already created an account. Please try to login or use the forgot password form."
+    invalid_token_message = _("This one-time use invite URL has already been used. This means you have likely already created an account. Please try to login or use the forgot password form.")
     # Since this is an UpdateView, the defautl success_url will be the user's get_absolute_url(). Override if you'd like different behavior
 
     def get_object(self, queryset=None):
@@ -275,7 +278,7 @@ class ForgotPasswordView(SendTokenEmailMixin, FormView):
 class ForgotPasswordChangeView(TokenValidateMixin, FormView):
     form_class = SetPasswordForm
     template_name = 'custom_user/forgot_password_change.html'
-    invalid_token_message = "Invalid reset password link. Please reset your password again."
+    invalid_token_message = _("Invalid reset password link. Please reset your password again.")
     auto_login_on_success = True
 
     def get_form_kwargs(self):
@@ -302,7 +305,7 @@ class ForgotPasswordChangeView(TokenValidateMixin, FormView):
 class ProfileEditView(UpdateView):
     model = User
     form_class = ProfileEditForm
-    success_message = "Profile succesfully updated."
+    success_message = _("Profile succesfully updated.")
 
     def get_object(self, queryset=None):
         return self.request.user

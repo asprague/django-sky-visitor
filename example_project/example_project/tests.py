@@ -184,7 +184,3 @@ class TestEmailRegister(BaseTestCase):
         self.assertIn('password2', form.errors)
 
 
-
-class TestUsernameRegister(BaseTestCase):
-    # TODO TEST: Write this
-    pass

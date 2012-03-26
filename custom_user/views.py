@@ -11,6 +11,7 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView, UpdateView, CreateView
+from django.utils.translation import ugettext_lazy as _
 from custom_user.backends import auto_login
 from custom_user.forms import *
 from custom_user.utils import SubclassedUser as User, is_email_only
@@ -20,7 +21,8 @@ from django.conf import settings
 class RegisterView(CreateView):
     model = User
     template_name = 'custom_user/register.html'
-    success_message = _("Successfully registered")
+    success_message = _("Successfully registered and signed in")
+    login_on_success = True
     # TODO: Finish implementing this view
 
     def get_form_class(self):
@@ -28,6 +30,16 @@ class RegisterView(CreateView):
             return EmailRegisterForm
         else:
             return RegisterForm
+
+    def form_valid(self, form):
+        response = super(RegisterView, self).form_valid(form)
+        user = self.object
+        auto_login(self.request, user)
+        messages.success(self.request, self.success_message)
+        return response
+
+    def get_success_url(self):
+        return settings.LOGIN_REDIRECT_URL
 
 # Originally from: https://github.com/stefanfoulis/django-class-based-auth-views/blob/develop/class_based_auth_views/views.py
 class LoginView(FormView):

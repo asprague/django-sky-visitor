@@ -1,4 +1,4 @@
-from custom_user.forms import EmailLoginForm, SetPasswordForm
+from custom_user.forms import EmailLoginForm, SetPasswordForm, EmailRegisterForm
 from django.conf import settings
 from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth.tokens import default_token_generator
@@ -78,7 +78,7 @@ class TestForgotPasswordProcess(BaseTestCase):
         self.assertEqual(message.subject, 'Password reset for testserver')
         # Should have the link in the body of the message
         self.assertIn(self._get_password_reset_url(), message.body)
-        # Link in message should work and land you on a set password form
+        # Link in email should work and land you on a set password form
         response2 = self.client.get(self._get_password_reset_url())
         self.assertIsInstance(response2.context_data['form'], SetPasswordForm)
 
@@ -95,7 +95,7 @@ class TestForgotPasswordProcess(BaseTestCase):
         }
         response = self.client.post(self._get_password_reset_url(), data)
         user = AuthUser.objects.get(email=USER_EMAIL)
-        # Should redirect to '/'
+        # Should redirect to '/' (LOGIN_REDIRECT_URL)
         self.assertRedirected(response, '/')
         # Should have a new password
         self.assertTrue(user.check_password(new_pass))
@@ -118,3 +118,73 @@ class TestForgotPasswordProcess(BaseTestCase):
         response = self.client.get('http://testserver/user/forgot_password/1-35t-d4e092280eb134000671/', follow=True)
         self.assertRedirects(response, '/user/login/')
 
+
+class TestEmailRegister(BaseTestCase):
+    view_url = '/user/register/'
+
+    def test_register_view_exists(self):
+        response = self.client.get(self.view_url)
+        self.assertEqual(response.status_code, 200)
+        form = response.context_data['form']
+        self.assertIsInstance(form, EmailRegisterForm)
+
+    def test_registration_should_succeed(self):
+        data = {
+            'email': 'testuser@example.com',
+            'password1': 'asdfasdf',
+            'password2': 'asdfasdf',
+        }
+        response = self.client.post(self.view_url, data=data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        # Should redirect to '/' (LOGIN_REDIRECT_URL)
+        self.assertRedirects(response, '/')
+
+
+    def test_registration_should_fail_on_duplicate_email(self):
+        testuser_email = 'testuser1@example.com'
+        data1 = {
+            'email': testuser_email,
+            'password1': 'asdfasdf',
+            'password2': 'asdfasdf',
+        }
+        response1 = self.client.post(self.view_url, data=data1, follow=True)
+        self.assertEqual(response1.status_code, 200)
+        # Test user should exist
+        self.assertEqual(User.objects.filter(email=testuser_email).count(), 1)
+        self.assertEqual(AuthUser.objects.filter(email=testuser_email).count(), 1)
+
+        data2 = {
+            'email': testuser_email,
+            'password1': 'asdfasdf',
+            'password2': 'asdfasdf',
+        }
+        response2 = self.client.post(self.view_url, data=data2, follow=True)
+        self.assertEqual(response2.status_code, 200)
+        form = response2.context_data['form']
+        # Form should have errors for the duplicate email
+        self.assertEqual(len(form.errors), 1)
+        self.assertIn('email', form.errors)
+
+        # Test user should only be in the database one time
+        self.assertEqual(User.objects.filter(email=testuser_email).count(), 1)
+        self.assertEqual(AuthUser.objects.filter(email=testuser_email).count(), 1)
+
+
+    def test_registration_should_fail_on_mismatched_password(self):
+        data = {
+            'email': 'testuser@example.com',
+            'password1': 'asdfasdf',
+            'password2': 'mismatch',
+        }
+        response = self.client.post(self.view_url, data=data)
+        self.assertEqual(response.status_code, 200)
+        form = response.context_data['form']
+        # Form should have errors for mismatched password
+        self.assertEqual(len(form.errors), 1)
+        self.assertIn('password2', form.errors)
+
+
+
+class TestUsernameRegister(BaseTestCase):
+    # TODO TEST: Write this
+    pass

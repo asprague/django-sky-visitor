@@ -1,21 +1,15 @@
-Extension to the django authentication/user system.
+A full featured authentication and user system that extends the default Django contib.auth pacakge.
 
-ADD TO DOCS:
+**Note:** Version 0.1.0. This library is under active development. While in active development, the API will be changing frequently.
 
-  * Benefits of subclassing: easier to write queries on our end.
-  * Subclassing: always does an inner join on your table and the auth.user table.
-  * Version 0.1.0 -- In development
-  * Fix pip package path
-  * Many pages pass error messages around using the messages framework. You should have it enabled on all custom_user templates.
-  * Info about auto login after the password reset completes
-  * Step by step of password reset process and how it works
-  * Don't create users with createsuperuser or django.contrib.auth.models.User.create_user() because there won't be a proper entry in the subclassed user table for them
-  * On EmailCustomUser you can set `validate_email_uniqeness` to false if you're concerned about the extra database query for each call to clean()
 
 # Features
 
-  * Email-based authentication. Hides username
-  * Adds password rules to field
+  * Subclass the User model to add your own fields, making queries easier to write
+  * Class-based view implementations of all of the views
+  * Email-based authentication. Entirely hides username from the user experience and allows an email-focused experience.
+  * Invitations
+  * Password rules
 
 
 # Usage
@@ -40,20 +34,41 @@ class User(EmailCustomUser):
   * In your're `settings.py` add these lines:
 
 ```python
-# Change myapp to the name of the app where you extend EmailCustom
+# Change myapp to the name of the app where you extend EmailCustomUser
 CUSTOM_USER_MODEL = 'myapp.User'
 AUTHENTICATION_BACKENDS = [
     'custom_user.backends.EmailBackend',
 ]
-```
 
+# Add this line to your INSTALLED_APPS
+INSTALLED_APPS = [
+    'custom_user',
+    # ...
+]
+
+# Specify a URL to redirect to after login
+LOGIN_REDIRECT_URL = '/'
+```
 
   *
 
+## Advanced usage
+
+  * Override URLs and views to provide custom workflows
+  * Custommize views and URLs
+  * Customize forms
+  * Choose to not automatically log a user in after they compelte a registration, or password reset
+  * Don't create users with `manage.py createsuperuser` or `django.contrib.auth.models.User.create_user()` because there won't be a proper entry in the subclassed user table for them
+  * On EmailCustomUser you can set `validate_email_uniqeness` to false if you're concerned about the extra database query for each call to clean()
+
+### Messages
+This app uses the [messages framework](https://docs.djangoproject.com/en/dev/ref/contrib/messages/) to pass success messages
+around after certain events (password reset completion, for example). If you would like to improve the experience for
+your users in this way, make sure you follow the message framework docs to enable and render these messages on your site.
 
 
 # Settings
-Must specify `SECRET_KEY` in your settings for the invitation process to be secure.
+Must specify `SECRET_KEY` in your settings for any emails with tokens to be secure (example: invitation, confirm email address, forgot password, etc)
 
 
 # Admin
@@ -61,7 +76,7 @@ By default, we remove the admin screens for Auth User and place in an auth scree
 
 If you want to re-add the the django contrib user, you can do that by re-registering django.contrib.auth.User
 
-If you want fine-grained control over the admin you can subclass the CustomUser module:
+If you want fine-grained control over the admin you can subclass the custom_user `UserAdmin`:
 
 ```python
 from custom_user.admin import UserAdmin
@@ -74,15 +89,36 @@ admin.site.register(MyUser, MyUserAdmin)
 ```
 
 
-# TODO
+# Background
+One of the problems this module was created to solve is the challenge presented when you want to store additional information
+about the user. The Django docs [suggest](https://docs.djangoproject.com/en/dev/topics/auth/#storing-additional-information-about-users)
+having a `UserProfile` model with a OneToOneField to `User`. This makes queries more straight forward. In the background,
+Django automatically does an inner join between contrib.auth.Models and your subclassed user model via
+[proxy models](https://docs.djangoproject.com/en/dev/topics/db/models/#proxy-models).
 
+
+# Roadmap
+
+Development TODO list:
+
+  * Invitation clean up and tests
+
+Features to add:
+
+  * Admin login form should handle email-only authentication
+  * Email confirmation on registration
   * Implement `LOGOUT_REDIRECT_URL`
   * Better built in password rules. Options for extending the password rules.
   * Refactor token URL generation to `utils.py`
 
+Improvements to documentation:
+
+  * Change PACKAGEPATHHERE in the quickstart guide
+  * Step by step of password reset process and how it works
+
 
 # Author
-Built at [Concentric Sky](http://www.concentricsky.com/) by by [Jeremy Blanchard](http://github.com/auzigog/).
+Built at [Concentric Sky](http://www.concentricsky.com/) by [Jeremy Blanchard](http://github.com/auzigog/).
 
 
 # License

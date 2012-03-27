@@ -9,12 +9,27 @@ import sys
 name = 'django-custom-user'
 package = ''
 description = 'Extension to the django authentication/user system.'
-url = 'http://github.com/concentricsky/' # TODO: set real URL
+url = 'http://github.com/concentricsky/django-custom-user/' # TODO: set real URL
 author = 'Concentric Sky'
 author_email = 'django@concentricsky.com'
-license = '' # TODO: set license
+license = 'Apache 2.0'
 install_requires = []
+classifiers = [
+    'Operating System :: MacOS :: MacOS X',
+    'Operating System :: Microsoft :: Windows',
+    'Operating System :: POSIX :: Linux',
+    'Programming Language :: Python',
+    'Framework :: Django',
+    'License :: OSI Approved :: Apache Software License',
+    'Topic :: Software Development :: Libraries',
+]
 
+try:
+    longdesc = open('README.md').read()
+except Exception:
+    longdesc = ('Breakdown is a lightweight python webserver that parses '
+                'jinja2 templates. It\'s intended to be used by designers '
+                'in rapid prototyping.')
 
 def get_version(package):
     """
@@ -68,5 +83,7 @@ setup(
     author_email = author_email,
     packages=get_packages(package),
     package_data=get_package_data(package),
-    install_requires=install_requires
+    install_requires=install_requires,
+    classifiers=classifiers,
+    longdesc = longdesc,
 )

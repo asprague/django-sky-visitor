@@ -73,8 +73,17 @@ class MyUserAdmin(UserAdmin):
 admin.site.register(MyUser, MyUserAdmin)
 ```
 
+
 # TODO
 
   * Implement `LOGOUT_REDIRECT_URL`
   * Better built in password rules. Options for extending the password rules.
   * Refactor token URL generation to `utils.py`
+
+
+# Author
+Built at [Concentric Sky](http://www.concentricsky.com/) by by [Jeremy Blanchard](http://github.com/auzigog/).
+
+
+# License
+This project is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

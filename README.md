@@ -50,7 +50,6 @@ INSTALLED_APPS = [
 LOGIN_REDIRECT_URL = '/'
 ```
 
-  *
 
 ## Advanced usage
 
@@ -110,6 +109,7 @@ Features to add:
   * Implement `LOGOUT_REDIRECT_URL`
   * Better built in password rules. Options for extending the password rules.
   * Refactor token URL generation to `utils.py`
+  * Change email form and email confirmation page
 
 Improvements to documentation:
 
@@ -122,4 +122,6 @@ Built at [Concentric Sky](http://www.concentricsky.com/) by [Jeremy Blanchard](h
 
 
 # License
-This project is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+Copyright 2012 Concentric Sky, Inc. This project is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+
+

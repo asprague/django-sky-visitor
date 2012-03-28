@@ -194,6 +194,8 @@ class TokenValidateMixin(object):
             messages.error(request, self.invalid_token_message, fail_silently=True)
         return HttpResponseRedirect(reverse('login'))
 
+    def get_user_from_token(self):
+        return self._user
 
 class InvitationCompleteView(TokenValidateMixin, UpdateView):
     form_class = InvitationCompleteForm
@@ -205,7 +207,7 @@ class InvitationCompleteView(TokenValidateMixin, UpdateView):
     # Since this is an UpdateView, the defautl success_url will be the user's get_absolute_url(). Override if you'd like different behavior
 
     def get_object(self, queryset=None):
-        return self._user
+        return self.get_user_from_token()
 
     def post(self, request, *args, **kwargs):
         if self.is_token_valid:
@@ -245,9 +247,9 @@ class InvitationCompleteView(TokenValidateMixin, UpdateView):
         if self.is_token_valid:
             if 'set_password_form' not in context_data or context_data['set_password_form'] is None:
                 if self.request.POST:
-                    context_data['set_password_form'] = self.form_class_set_password(self._user, self.request.POST, prefix='set_password')
+                    context_data['set_password_form'] = self.form_class_set_password(self.get_user_from_token(), self.request.POST, prefix='set_password')
                 else:
-                    context_data['set_password_form'] = self.form_class_set_password(self._user, prefix='set_password')
+                    context_data['set_password_form'] = self.form_class_set_password(self.get_user_from_token(), prefix='set_password')
         else:
             context_data['set_password_form'] = None
         return context_data
@@ -295,7 +297,7 @@ class ForgotPasswordChangeView(TokenValidateMixin, FormView):
 
     def get_form_kwargs(self):
         kwargs = super(ForgotPasswordChangeView, self).get_form_kwargs()
-        kwargs['user'] = self._user  # Form expects this
+        kwargs['user'] = self.get_user_from_token()  # Form expects this
         return kwargs
 
     def get_form(self, form_class):
@@ -307,7 +309,7 @@ class ForgotPasswordChangeView(TokenValidateMixin, FormView):
     def form_valid(self, form):
         if self.is_token_valid:
             form.save()
-            auto_login(self.request, self._user)
+            auto_login(self.request, self.get_user_from_token())
         return super(ForgotPasswordChangeView, self).form_valid(form)
 
     def get_success_url(self):

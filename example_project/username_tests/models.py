@@ -1,8 +1,8 @@
-from custom_user.models import CustomUser, UserManager
+from extended_auth.models import ExtendedUser, UserManager
 
-class User(CustomUser):
+class User(ExtendedUser):
     """
-    Custom user class
+    ExtendedUser concrete class
     """
 
     # Needed because of our subclassing. Weird quirk.

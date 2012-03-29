@@ -17,8 +17,8 @@ from django.contrib.auth import admin as auth_admin
 from django.contrib import admin
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from custom_user.forms import UserChangeAdminForm, UserCreateAdminForm
-from custom_user.utils import SubclassedUser as User
+from extended_auth.forms import UserChangeAdminForm, UserCreateAdminForm
+from extended_auth.utils import SubclassedUser as User
 
 
 # Unregister the default User model to avoid confusion

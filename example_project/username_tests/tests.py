@@ -1,4 +1,4 @@
-from custom_user.forms import LoginForm, RegisterForm
+from extended_auth.forms import LoginForm, RegisterForm
 from django.test import TestCase
 
 class BaseTestCase(TestCase):

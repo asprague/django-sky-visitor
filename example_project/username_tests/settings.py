@@ -1,11 +1,11 @@
 from example_project.settings import *
 
-CUSTOM_USER_MODEL = 'username_tests.User'
+EXTENDED_AUTH_USER_MODEL = 'username_tests.User'
 
 
 INSTALLED_APPS = [
     'username_tests',
-    'custom_user',
+    'extended_auth',
 
     'django.contrib.auth',
     'django.contrib.contenttypes',

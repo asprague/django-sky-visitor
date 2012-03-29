@@ -19,7 +19,7 @@ import re
 import os
 import sys
 
-name = 'django-custom-user'
+name = 'django-extended-auth'
 package = ''
 description = 'Extension to the django authentication/user system.'
 url = 'http://github.com/concentricsky/django-custom-user/' # TODO: set real URL
@@ -48,8 +48,8 @@ def get_version(package):
     """
     Return package version as listed in `__version__` in `init.py`.
     """
-    init_py = open(os.path.join(package, '__init__.py')).read()
-    return re.search("^__version__ = ['\"]([^'\"]+)['\"]", init_py, re.MULTILINE).group(1)
+    import extended_auth
+    return '.'.join(extended_auth.__version__)
 
 
 def get_packages(package):

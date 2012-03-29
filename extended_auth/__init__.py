@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-__version__ = '0.1.0'
+__version__ = (0, 7, 0)
 
 # Via: http://passingcuriosity.com/2010/default-settings-for-django-applications/
 def inject_app_defaults(application):

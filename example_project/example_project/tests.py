@@ -1,4 +1,4 @@
-from custom_user.forms import EmailLoginForm, SetPasswordForm, EmailRegisterForm
+from extended_auth.forms import EmailLoginForm, SetPasswordForm, EmailRegisterForm
 from django.conf import settings
 from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth.tokens import default_token_generator
@@ -44,7 +44,7 @@ class TestEmailLoginForm(BaseTestCase):
         response = self.client.post('/user/login/', data)
         user = User.objects.get(email=USER_EMAIL)
         # Should be logged in
-        self.assertLoggedIn(user, backend='custom_user.backends.EmailBackend')
+        self.assertLoggedIn(user, backend='extended_auth.backends.EmailBackend')
         # Should redirect
         self.assertRedirected(response, '/')
 
@@ -100,7 +100,7 @@ class TestForgotPasswordProcess(BaseTestCase):
         # Should have a new password
         self.assertTrue(user.check_password(new_pass))
         # Should automatically log the user in
-        self.assertLoggedIn(user, backend='custom_user.backends.BaseBackend')
+        self.assertLoggedIn(user, backend='extended_auth.backends.BaseBackend')
 
         # Now log the user out and make sure that reset link doesn't work anymore
         self.client.logout()

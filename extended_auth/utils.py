@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from django.utils.translation import ugettext_lazy as _
+
 def get_user_model():
     from django.conf import settings
     # Grab the user model path
-    custom_user_model_path = getattr(settings, 'CUSTOM_USER_MODEL', None)
-    if custom_user_model_path is None:
-        raise Exception(u"Cannot find your specified CUSTOM_USER_MODEL. Is CUSTOM_USER_MODEL in your settings.py? Are CustomUser and your CustomUser-subclass app both in your INSTALLED_APPS?")
+    extened_user_model_path = getattr(settings, 'EXTENDED_AUTH_USER_MODEL', None)
+    if extened_user_model_path is None:
+        raise Exception(_("Cannot find your specified EXTENDED_AUTH_USER_MODEL. Is EXTENDED_AUTH_USER_MODEL in your settings.py? Are ExtendedUser and your ExtendedUser-subclass app both in your INSTALLED_APPS?"))
 
-    parts = custom_user_model_path.split('.')
+    parts = extened_user_model_path.split('.')
     model_name = parts.pop()
     parts.append('models')
     module = __import__('.'.join(parts))

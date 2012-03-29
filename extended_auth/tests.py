@@ -15,8 +15,8 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.contrib.auth.models import User as AuthUser
-from custom_user.utils import SubclassedUser as User
-from custom_user.forms import UniqueRequiredEmailField
+from extended_auth.utils import SubclassedUser as User
+from extended_auth.forms import UniqueRequiredEmailField
 
 
 class BaseTestCase(TestCase):

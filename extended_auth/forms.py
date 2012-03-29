@@ -17,8 +17,8 @@ from django.conf import settings
 from django.contrib.auth import forms as auth_forms, authenticate
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User as AuthUser
-from custom_user.utils import SubclassedUser as User
-from custom_user.fields import UniqueRequiredEmailField, PasswordRulesField
+from extended_auth.utils import SubclassedUser as User
+from extended_auth.fields import UniqueRequiredEmailField, PasswordRulesField
 
 
 class NameRequiredMixin(object):

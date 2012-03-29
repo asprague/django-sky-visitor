@@ -41,7 +41,7 @@ def get_uuid_username():
 class UserManager(auth_models.UserManager):
     pass
 
-class CustomUser(auth_models.User):
+class ExtendedUser(auth_models.User):
     """
     This is the abstract base class that you should subclass from to add your own fields.
     """
@@ -54,7 +54,7 @@ class CustomUser(auth_models.User):
         abstract = True
 
     def save(self, *args, **kwargs):
-        super(CustomUser, self).save(*args, **kwargs)
+        super(ExtendedUser, self).save(*args, **kwargs)
 
 
 
@@ -86,7 +86,7 @@ class EmailUserManager(UserManager):
         user.save(using=self._db)
         return user
 
-class EmailCustomUser(CustomUser):
+class EmailExtendedUser(ExtendedUser):
     """
     Inherit fromt his class if you'd like to have an "email only" user and hide usernames
     """
@@ -110,10 +110,10 @@ class EmailCustomUser(CustomUser):
             self.username = get_uuid_username()
         if allow_email_uniqueness_validation:
             self.validate_email_is_unique()
-        super(EmailCustomUser, self).save(*args, **kwargs)
+        super(EmailExtendedUser, self).save(*args, **kwargs)
 
     def validate_email_is_unique(self, force_validation=False):
-        from custom_user.utils import SubclassedUser as User
+        from extended_auth.utils import SubclassedUser as User
         if self.validate_email_uniqueness or force_validation:
             if User.objects.filter(email__iexact=self.email).exclude(id=self.id).exists():
                 raise ValidationError({'email': self.error_messages['unique_email']})

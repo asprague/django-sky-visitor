@@ -5,18 +5,18 @@ TEMPLATE_DEBUG = DEBUG
 
 
 ###
-# Custom settings for custom_user
+# Settings specific to extended_auth
 ###
 
-CUSTOM_USER_MODEL = 'example_project.User'
+EXTENDED_AUTH_USER_MODEL = 'example_project.User'
 LOGIN_REDIRECT_URL = '/'
 AUTHENTICATION_BACKENDS = [
-    'custom_user.backends.EmailBackend',
+    'extended_auth.backends.EmailBackend',
 ]
 
 INSTALLED_APPS = [
     'example_project',
-    'custom_user',
+    'extended_auth',
 
     'django.contrib.auth',
     'django.contrib.contenttypes',

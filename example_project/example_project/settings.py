@@ -5,7 +5,9 @@ TEMPLATE_DEBUG = DEBUG
 
 
 ###
-# Settings specific to extended_auth
+#
+#   Settings specific to extended_auth
+#
 ###
 
 EXTENDED_AUTH_USER_MODEL = 'example_project.User'
@@ -27,6 +29,14 @@ INSTALLED_APPS = [
     'django.contrib.admin',
 ]
 
+
+###
+#
+#   Other django settings
+#
+###
+import os.path
+PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -132,6 +142,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_DIR, 'templates'),
 )
 
 # A sample logging configuration. The only tangible logging

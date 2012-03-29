@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import os, sys
+import os
+import sys
 
 
 # Insert the app that this is an example project for

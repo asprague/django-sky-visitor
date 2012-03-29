@@ -1,5 +1,6 @@
 from extended_auth.models import ExtendedUser, UserManager
 
+
 class User(ExtendedUser):
     """
     ExtendedUser concrete class

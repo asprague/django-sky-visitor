@@ -11,6 +11,7 @@ from example_project.models import User
 USER_EMAIL = 'user@example.com'
 USER_PASS = 'adminadmin'
 
+
 class BaseTestCase(TestCase):
 
     def assertLoggedIn(self, user, backend=None):
@@ -27,6 +28,7 @@ class BaseTestCase(TestCase):
         if not hasattr(self, '_user'):
             self._user = User.objects.get(email=USER_EMAIL)
         return self._user
+
 
 class TestEmailLoginForm(BaseTestCase):
 
@@ -56,7 +58,7 @@ class TestForgotPasswordProcess(BaseTestCase):
     def _get_password_reset_url(self, user=None, with_host=True):
         if user is None:
             user = self.default_user
-        url = reverse('forgot_password_change', kwargs={'uidb36':int_to_base36(user.id), 'token': default_token_generator.make_token(user)})
+        url = reverse('forgot_password_change', kwargs={'uidb36': int_to_base36(user.id), 'token': default_token_generator.make_token(user)})
         if  with_host:
             url = 'http://testserver%s' % url
         return url
@@ -139,7 +141,6 @@ class TestEmailRegister(BaseTestCase):
         # Should redirect to '/' (LOGIN_REDIRECT_URL)
         self.assertRedirects(response, '/')
 
-
     def test_registration_should_fail_on_duplicate_email(self):
         testuser_email = 'testuser1@example.com'
         data1 = {
@@ -169,7 +170,6 @@ class TestEmailRegister(BaseTestCase):
         self.assertEqual(User.objects.filter(email=testuser_email).count(), 1)
         self.assertEqual(AuthUser.objects.filter(email=testuser_email).count(), 1)
 
-
     def test_registration_should_fail_on_mismatched_password(self):
         data = {
             'email': 'testuser@example.com',
@@ -182,5 +182,3 @@ class TestEmailRegister(BaseTestCase):
         # Form should have errors for mismatched password
         self.assertEqual(len(form.errors), 1)
         self.assertIn('password2', form.errors)
-
-

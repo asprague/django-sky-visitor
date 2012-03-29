@@ -1,8 +1,10 @@
 from extended_auth.forms import LoginForm, RegisterForm
 from django.test import TestCase
 
+
 class BaseTestCase(TestCase):
     pass
+
 
 class TestLoginForm(BaseTestCase):
     view_url = '/user/login/'

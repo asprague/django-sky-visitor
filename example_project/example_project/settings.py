@@ -11,6 +11,7 @@ TEMPLATE_DEBUG = DEBUG
 ###
 
 EXTENDED_AUTH_USER_MODEL = 'example_project.User'
+#EXTENDED_AUTH_USER_MODEL = 'django.contrib.auth.User'
 LOGIN_REDIRECT_URL = '/'
 AUTHENTICATION_BACKENDS = [
     'extended_auth.backends.EmailBackend',

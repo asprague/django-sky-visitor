@@ -6,7 +6,7 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.http import int_to_base36
-from example_project.models import User
+from extended_auth.utils import SubclassedUser as User
 
 USER_EMAIL = 'user@example.com'
 USER_PASS = 'adminadmin'

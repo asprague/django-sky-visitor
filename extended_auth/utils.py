@@ -25,11 +25,12 @@ def get_user_model():
     parts = extened_user_model_path.split('.')
     model_name = parts.pop()
     parts.append('models')
-    module = __import__('.'.join(parts))
-    return getattr(module.models, model_name)
+    # Empty fromlist causes it to import "baz" when given "foo.bar.baz" ... Without it, it imports "foo"
+    module = __import__('.'.join(parts), fromlist=[''])
+    return getattr(module, model_name)
 
 SubclassedUser = get_user_model()
 
 
 def is_email_only():
-    return SubclassedUser._is_email_only
+    return hasattr(SubclassedUser, '_is_email_only') and SubclassedUser._is_email_only

@@ -1,0 +1,1 @@
+This sub-project is for testing the whole suite of tests of with django.contrib.auth.User instead of a subclassed user.

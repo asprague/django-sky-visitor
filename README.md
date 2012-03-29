@@ -94,7 +94,7 @@ admin.site.register(MyUser, MyUserAdmin)
     # Run module tests and email-based tests
     ./manage.py test extended_auth example_project
     # Run username-based tests
-    ./manage.py test username_tests --settings=username_tests.settings
+    ./manage.py test extended_auth username_tests --settings=username_tests.settings
 
 
 # Subclassing User vs User Profiles
@@ -135,9 +135,11 @@ Features to add:
   * Better built in password rules. Options for extending the password rules.
   * Refactor token URL generation to `utils.py`
   * Change email form and email confirmation page
+  * Ability to add, link, and confirm multiple email addresses to the same account (separate app)
 
 Improvements to documentation:
 
+  * Write sphinx documentation
   * Step by step of password reset process and how it works
   * List all template paths that the default templates will look for
   * Change PACKAGEPATHHERE in the quickstart guide once this is up on github

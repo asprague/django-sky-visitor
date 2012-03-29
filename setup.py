@@ -22,7 +22,7 @@ import sys
 name = 'django-extended-auth'
 package = ''
 description = 'Extension to the django authentication/user system.'
-url = 'http://github.com/concentricsky/django-custom-user/' # TODO: set real URL
+url = 'http://github.com/concentricsky/django-custom-user/'  # TODO: set real URL
 author = 'Concentric Sky'
 author_email = 'django@concentricsky.com'
 license = 'Apache 2.0'
@@ -43,6 +43,7 @@ except Exception:
     longdesc = ('Breakdown is a lightweight python webserver that parses '
                 'jinja2 templates. It\'s intended to be used by designers '
                 'in rapid prototyping.')
+
 
 def get_version(package):
     """
@@ -93,10 +94,10 @@ setup(
     license=license,
     description=description,
     author=author,
-    author_email = author_email,
+    author_email=author_email,
     packages=get_packages(package),
     package_data=get_package_data(package),
     install_requires=install_requires,
     classifiers=classifiers,
-    longdesc = longdesc,
+    longdesc=longdesc,
 )

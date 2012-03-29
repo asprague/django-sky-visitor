@@ -19,12 +19,12 @@ from extended_auth.views import *
 TOKEN_REGEX = '(?P<uidb36>[0-9A-Za-z]{1,13})-(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})'
 
 urlpatterns = patterns('',
-    url(r'^register/$',                         RegisterView.as_view(),         name='register'),
-    url(r'^login/$',                            LoginView.as_view(),            name='login'),
-    url(r'^logout/$',                           LogoutView.as_view(),           name='logout'),
+    url(r'^register/$', RegisterView.as_view(), name='register'),
+    url(r'^login/$', LoginView.as_view(), name='login'),
+    url(r'^logout/$', LogoutView.as_view(), name='logout'),
 #    url(r'invitation/%s/$' % TOKEN_REGEX, InvitationCompleteView.as_view(),   name='invitation_complete'),
 #    url(r'invitation/done/$',   InvitationDoneView.as_view(),   name='invitation_done'),
-    url(r'^forgot_password/$',                  ForgotPasswordView.as_view(),   name='forgot_password'),
-    url(r'^forgot_password/check_email/$',      TemplateView.as_view(template_name='extended_auth/forgot_password_check_email.html'), name='forgot_password_check_email'),
-    url(r'^forgot_password/%s/$' % TOKEN_REGEX, ForgotPasswordChangeView.as_view(),     name='forgot_password_change'),
+    url(r'^forgot_password/$', ForgotPasswordView.as_view(), name='forgot_password'),
+    url(r'^forgot_password/check_email/$', TemplateView.as_view(template_name='extended_auth/forgot_password_check_email.html'), name='forgot_password_check_email'),
+    url(r'^forgot_password/%s/$' % TOKEN_REGEX, ForgotPasswordChangeView.as_view(), name='forgot_password_change'),
 )

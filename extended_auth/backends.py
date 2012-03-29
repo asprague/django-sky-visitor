@@ -34,6 +34,7 @@ class BaseBackend(backends.ModelBackend):
         except User.DoesNotExist:
             return None
 
+
 class UsernameBackend(BaseBackend):
     def authenticate(self, username=None, password=None):
         try:
@@ -45,6 +46,7 @@ class UsernameBackend(BaseBackend):
             return user
         else:
             return None
+
 
 class EmailBackend(BaseBackend):
     def authenticate(self, email=None, password=None):

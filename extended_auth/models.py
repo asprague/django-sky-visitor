@@ -24,8 +24,10 @@ from django.core.exceptions import ValidationError
 
 USERNAME_LENGTH = 10
 
+
 def get_uuid_username_string():
     return str(uuid.uuid4().int)[:USERNAME_LENGTH]
+
 
 def get_uuid_username():
     username = get_uuid_username_string()
@@ -41,6 +43,7 @@ def get_uuid_username():
 class UserManager(auth_models.UserManager):
     pass
 
+
 class ExtendedUser(auth_models.User):
     """
     This is the abstract base class that you should subclass from to add your own fields.
@@ -55,7 +58,6 @@ class ExtendedUser(auth_models.User):
 
     def save(self, *args, **kwargs):
         super(ExtendedUser, self).save(*args, **kwargs)
-
 
 
 class EmailUserManager(UserManager):
@@ -85,6 +87,7 @@ class EmailUserManager(UserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+
 
 class EmailExtendedUser(ExtendedUser):
     """
@@ -124,5 +127,3 @@ class EmailExtendedUser(ExtendedUser):
         you can disable this by settings `validate_email_uniqueness` to False and handling uniqueness yourself.
         """
         self.validate_email_is_unique()
-
-

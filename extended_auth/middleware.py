@@ -18,12 +18,13 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
 from extended_auth.exceptions import Http403
 
+
 def render_to_403(*args, **kwargs):
     """
         Returns a HttpResponseForbidden whose content is filled with the result of calling
         django.template.loader.render_to_string() with the passed arguments.
     """
-    if not isinstance(args,list):
+    if not isinstance(args, list):
         args = list()
         args.append('403.html')
 
@@ -32,7 +33,8 @@ def render_to_403(*args, **kwargs):
 
     return response
 
+
 class Http403Middleware(object):
-    def process_exception(self,request,exception):
-        if isinstance(exception,Http403):
+    def process_exception(self, request, exception):
+        if isinstance(exception, Http403):
             return render_to_403(context_instance=RequestContext(request))

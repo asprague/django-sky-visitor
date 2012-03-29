@@ -20,9 +20,9 @@ from django.utils.translation import ugettext_lazy as _
 from extended_auth.forms import UserChangeAdminForm, UserCreateAdminForm
 from extended_auth.utils import SubclassedUser as User
 
-
 # Unregister the default User model to avoid confusion
 admin.site.unregister(auth_models.User)
+
 
 class EmailUserAdmin(auth_admin.UserAdmin):
 

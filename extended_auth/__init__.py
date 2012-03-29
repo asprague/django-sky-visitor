@@ -14,6 +14,7 @@
 
 __version__ = (0, 7, 0)
 
+
 # Via: http://passingcuriosity.com/2010/default-settings-for-django-applications/
 def inject_app_defaults(application):
     """Inject an application's default settings"""
@@ -40,4 +41,3 @@ def inject_app_defaults(application):
         pass
 
 inject_app_defaults(__name__)
-

@@ -45,7 +45,6 @@ class UniqueEmailTest(BaseTestCase):
         # Shouldn't throw an error here
         second_user = User.objects.create_user(nonunique_email, password='asdf')
 
-
     def test_should_not_error_on_duplicate_email_if_save_argument_overridden(self):
         nonunique_email = 'nonunique@example.com'
         User.validate_email_uniqueness = True
@@ -81,9 +80,8 @@ class EmailCreateUserTest(BaseTestCase):
         self.assertNotEqual(user.username, email)
         self.assertEqual(user.email, email)
 
+
 class InviteUserTests(BaseTestCase):
 
     def setUp(self):
         pass
-
-

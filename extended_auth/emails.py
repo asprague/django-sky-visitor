@@ -22,6 +22,7 @@ from django.template import loader
 from django.template.context import Context
 from django.utils.http import int_to_base36
 
+
 class TokenTemplateEmail(object):
 
     def __init__(self, user, email_template_name=None, token_view_name=None, request=None, protocol='http', domain='localhost', subject=None, from_email=None, token_generator=default_token_generator):
@@ -56,7 +57,7 @@ class TokenTemplateEmail(object):
 
     def get_complete_token_url_path(self, uidb36, token):
         if self.token_view_name:
-            return reverse(self.token_view_name, kwargs={'uidb36':uidb36, 'token':token})
+            return reverse(self.token_view_name, kwargs={'uidb36': uidb36, 'token': token})
         else:
             raise ImproperlyConfigured("No token_view_name. Please provide a token_view_name in the view class or "
                                         "override get_complete_token_url_path().")

@@ -32,6 +32,7 @@ from extended_auth.utils import SubclassedUser as User, is_email_only
 from django.contrib.auth.models import User as AuthUser
 from django.conf import settings
 
+
 class RegisterView(CreateView):
     model = User
     template_name = 'extended_auth/register.html'
@@ -54,6 +55,7 @@ class RegisterView(CreateView):
 
     def get_success_url(self):
         return settings.LOGIN_REDIRECT_URL
+
 
 # Originally from: https://github.com/stefanfoulis/django-class-based-auth-views/blob/develop/class_based_auth_views/views.py
 class LoginView(FormView):
@@ -171,7 +173,6 @@ class InvitationMixin(SendTokenEmailMixin):
         return self.object
 
 
-
 class InvitationView(InvitationMixin, FormView):
     # TODO: Change this to be a CreateView and define good defaults here.
     template_name = 'extended_auth/invite.html'
@@ -191,7 +192,7 @@ class TokenValidateMixin(object):
     def dispatch(self, request, *args, **kwargs):
         uidb36 = kwargs['uidb36']
         token = kwargs['token']
-        assert uidb36 is not None and token is not None # checked by URLconf
+        assert uidb36 is not None and token is not None  # checked by URLconf
         try:
             uid_int = base36_to_int(uidb36)
             # Get an AuthUser instance here since we don't need any of the extra aspects of the SubclassedUser
@@ -210,6 +211,7 @@ class TokenValidateMixin(object):
 
     def get_user_from_token(self):
         return self._user
+
 
 class InvitationCompleteView(TokenValidateMixin, UpdateView):
     form_class = InvitationCompleteForm
@@ -241,7 +243,7 @@ class InvitationCompleteView(TokenValidateMixin, UpdateView):
         form.instance.is_active = True
         if self.auto_login_on_success:
             auto_login(self.request, form.instance)
-        return super(InvitationCompleteView, self).form_valid(form) # Save and redirect
+        return super(InvitationCompleteView, self).form_valid(form)  # Save and redirect
 
     def form_invalid(self, form):
         return self._form_invalid(form)
@@ -296,7 +298,7 @@ class ForgotPasswordView(SendTokenEmailMixin, FormView):
         kwargs['email_template_name'] = 'extended_auth/forgot_password_email.html'
         kwargs['token_view_name'] = 'forgot_password_change'
         kwargs['domain'] = domain
-        kwargs['subject'] = "Password reset for %s" % domain    #get_current_site(self.request)
+        kwargs['subject'] = "Password reset for %s" % domain
         return kwargs
 
     def get_success_url(self):
@@ -329,6 +331,7 @@ class ForgotPasswordChangeView(TokenValidateMixin, FormView):
     def get_success_url(self):
         if not self.success_url:
             return settings.LOGIN_REDIRECT_URL
+
 
 class ProfileEditView(UpdateView):
     model = User

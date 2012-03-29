@@ -21,6 +21,7 @@ from django.contrib.auth.models import User as AuthUser
 class Html5EmailInput(widgets.Input):
     input_type = 'email'
 
+
 class UniqueRequiredEmailField(forms.EmailField):
     nonunique_error = _("This email address is already in use. Please enter a different email address.")
     required = True
@@ -38,6 +39,7 @@ class UniqueRequiredEmailField(forms.EmailField):
         if AuthUser.objects.filter(email__iexact=value):
             raise forms.ValidationError(self.nonunique_error)
         return value
+
 
 class PasswordRulesField(forms.CharField):
     DEFAULT_MIN_LENGTH = 8

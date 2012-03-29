@@ -14,6 +14,7 @@
 
 from django.utils.translation import ugettext_lazy as _
 
+
 def get_user_model():
     from django.conf import settings
     # Grab the user model path
@@ -27,22 +28,8 @@ def get_user_model():
     module = __import__('.'.join(parts))
     return getattr(module.models, model_name)
 
-
-#class SubclassedUserHolder(object):
-#
-#    override_user_model = None
-#
-#    @classmethod
-#    def get_user_model(cls):
-#        if cls.override_user_model:
-#            return cls.override_user_model
-#        else:
-#            return get_user_model()
-
-
 SubclassedUser = get_user_model()
 
 
 def is_email_only():
     return SubclassedUser._is_email_only
-

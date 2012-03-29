@@ -35,7 +35,8 @@ class RegisterBasicForm(auth_forms.UserCreationForm):
     """
     class Meta:
         model = User
-        fields = ['username',]
+        fields = ['username']
+
 
 class RegisterForm(RegisterBasicForm):
     """
@@ -45,6 +46,7 @@ class RegisterForm(RegisterBasicForm):
         model = User
         fields = ['username', 'email']
 
+
 class EmailRegisterForm(forms.ModelForm):
     error_messages = {
         'password_mismatch': _("The two password fields didn't match."),
@@ -52,12 +54,12 @@ class EmailRegisterForm(forms.ModelForm):
     email = UniqueRequiredEmailField()
     password1 = PasswordRulesField(label=_("Password"))
     password2 = forms.CharField(label=_("Password confirmation"),
-        widget=forms.PasswordInput,
-        help_text = _("Enter the same password as above, for verification."))
+                                widget=forms.PasswordInput,
+                                help_text=_("Enter the same password as above, for verification."))
 
     class Meta:
         model = User
-        fields = ['email',]
+        fields = ['email']
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1", "")
@@ -74,6 +76,7 @@ class EmailRegisterForm(forms.ModelForm):
             user.save()
         return user
 
+
 class UserCreateAdminForm(forms.ModelForm):
     # TODO: Make email and non-email version
     password1 = PasswordRulesField(label=_("Password"))
@@ -86,12 +89,12 @@ class UserCreateAdminForm(forms.ModelForm):
     email = UniqueRequiredEmailField()
     password1 = PasswordRulesField(label=_("Password"))
     password2 = forms.CharField(label=_("Password confirmation"), widget=forms.PasswordInput,
-        help_text = _("Enter the same password as above, for verification."))
+                                help_text=_("Enter the same password as above, for verification."))
 
     class Meta:
         model = User
-        fields = ['email',]
-        exclude = ['username',]
+        fields = ['email']
+        exclude = ['username']
 
     def clean_password2(self):
         password1 = self.cleaned_data.get("password1", "")
@@ -120,7 +123,7 @@ class RegisterForm(auth_forms.UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email',]
+        fields = ['username', 'email']
 
 
 class InvitationForm(forms.ModelForm):
@@ -129,7 +132,7 @@ class InvitationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['email',]
+        fields = ['email']
 
     def save(self, commit=True):
         user = super(InvitationForm, self).save(commit=False)
@@ -169,6 +172,7 @@ PasswordChangeForm.base_fields.keyOrder = ['old_password', 'new_password1', 'new
 class InvitationCompleteForm(forms.ModelForm):
     # TODO: Make email and non-email version
     email = UniqueRequiredEmailField()
+
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'email']
@@ -193,6 +197,7 @@ class BaseLoginForm(forms.Form):
     def get_user(self):
         return self.user_cache
 
+
 class LoginForm(BaseLoginForm):
     username = forms.CharField(label=_("Username"), max_length=30)
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
@@ -212,6 +217,7 @@ class LoginForm(BaseLoginForm):
             elif not self.user_cache.is_active:
                 raise forms.ValidationError(self.error_messages['inactive'])
         return self.cleaned_data
+
 
 class EmailLoginForm(BaseLoginForm):
     email = forms.CharField(label=_("Email"), max_length=75)
@@ -233,12 +239,14 @@ class EmailLoginForm(BaseLoginForm):
                 raise forms.ValidationError(self.error_messages['inactive'])
         return self.cleaned_data
 
+
 class PasswordResetForm(auth_forms.PasswordResetForm):
     def save(self, *args, **kwargs):
         """
         Override standard forgot password email sending. Sending now occurs in the view.
         """
         return
+
 
 class ProfileEditForm(forms.ModelForm):
     # TODO: Make email and non-email version

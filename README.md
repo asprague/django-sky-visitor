@@ -88,6 +88,15 @@ admin.site.register(MyUser, MyUserAdmin)
 ```
 
 
+# Testing
+
+    cd example_project
+    # Run module tests and email-based tests
+    ./manage.py test extended_auth example_project
+    # Run username-based tests
+    ./manage.py test username_tests --settings=username_tests.settings
+
+
 # Subclassing User vs User Profiles
 One of the problems this module was created to solve is the challenge presented when you want to store additional information
 about the user. The Django docs [suggest](https://docs.djangoproject.com/en/dev/topics/auth/#storing-additional-information-about-users)

@@ -112,7 +112,6 @@ in this app is a resuable implementation of the subclassing approach that has be
 If you plan on utilizing the subclassing aspects of this application, it is best to use them from the beginning so you don't have a mix of User and SubclassedUser entries in the database.
 
 
-
 # Roadmap
 
 Development TODO list:
@@ -130,16 +129,21 @@ Features to add:
 
 Improvements to documentation:
 
-  * Change PACKAGEPATHHERE in the quickstart guide
   * Step by step of password reset process and how it works
+  * List all template paths that the default templates will look for
+  * Change PACKAGEPATHHERE in the quickstart guide once this is up on github
+  * Add link to github issue queue in the "contributing" section
   * Add link to blog post about subclassing the user
+
+
+# Contributing
+Please fork this repo and send pull requests. Submit issues/questions/suggestions in the issue queue.
 
 
 # Author
 Built at [Concentric Sky](http://www.concentricsky.com/) by [Jeremy Blanchard](http://github.com/auzigog/).
 
+This project is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). Copyright 2012 Concentric Sky, Inc.
 
-# License
-Copyright 2012 Concentric Sky, Inc. This project is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).
 
 

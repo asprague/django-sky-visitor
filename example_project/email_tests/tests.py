@@ -1,51 +1,14 @@
-from example_project.tests import TestRegister
+from example_project.tests import TestRegister, TestLoginFormMixin, FIXTURE_USER_DATA, BaseTestCase, TestForgotPasswordProcess
 from extended_auth.forms import EmailLoginForm, EmailRegisterForm
 from django.contrib.auth.models import User as AuthUser
 from django.test import TestCase
 from extended_auth.utils import SubclassedUser
 
-USER_USERNAME = 'testuser'
-USER_EMAIL = 'testuser@example.com'
-USER_PASS = 'adminadmin'
+TestEmailForgotPasswordProcess = TestForgotPasswordProcess
 
 
-class BaseTestCase(TestCase):
-
-    def assertLoggedIn(self, user, backend=None):
-        self.assertEqual(self.client.session['_auth_user_id'], user.id)
-        if backend:
-            self.assertEqual(self.client.session['_auth_user_backend'], backend)
-
-    def assertRedirected(self, response, expected_url, status_code=302):
-        self.assertEqual(response.status_code, status_code)
-        self.assertEqual(response._headers['location'][1], 'http://testserver%s' % expected_url)
-
-    @property
-    def default_user(self):
-        if not hasattr(self, '_user'):
-            self._user = SubclassedUser.objects.get(email=USER_EMAIL)
-        return self._user
-
-
-class TestEmailLoginForm(BaseTestCase):
-
-    def test_login_form_should_be_email_based(self):
-        response = self.client.get('/user/login/')
-        self.assertEqual(response.status_code, 200)
-        form = response.context_data['form']
-        self.assertIsInstance(form, EmailLoginForm)
-
-    def test_login_form_should_succeed(self):
-        data = {
-            'email': USER_EMAIL,
-            'password': USER_PASS,
-        }
-        response = self.client.post('/user/login/', data)
-        user = SubclassedUser.objects.get(email=USER_EMAIL)
-        # Should be logged in
-        self.assertLoggedIn(user, backend='extended_auth.backends.EmailBackend')
-        # Should redirect
-        self.assertRedirected(response, '/')
+class BaseEmailTestCase(BaseTestCase):
+    pass
 
 
 class TestEmailRegister(TestRegister):
@@ -59,7 +22,6 @@ class TestEmailRegister(TestRegister):
         response = super(TestEmailRegister, self).test_register_view_exists()
         form = response.context_data['form']
         self.assertIsInstance(form, EmailRegisterForm)
-
 
     def test_registration_should_succeed(self):
         super(TestEmailRegister, self).test_registration_should_succeed()
@@ -86,3 +48,21 @@ class TestEmailRegister(TestRegister):
         # Test user should only be in the database one time
         self.assertEqual(SubclassedUser.objects.filter(email=testuser_email).count(), 1)
         self.assertEqual(AuthUser.objects.filter(email=testuser_email).count(), 1)
+
+
+class TestEmailLoginForm(TestLoginFormMixin, BaseEmailTestCase):
+
+    def test_login_form_should_be_email_based(self):
+        response = self.client.get(self.view_url)
+        self.assertEqual(response.status_code, 200)
+        form = response.context_data['form']
+        self.assertIsInstance(form, EmailLoginForm)
+
+    def test_login_form_should_succeed(self):
+        data = FIXTURE_USER_DATA
+        response = self.client.post(self.view_url, data)
+        user = SubclassedUser.objects.get(email=data['email'])
+        # Should be logged in
+        self.assertLoggedIn(user, backend='extended_auth.backends.EmailBackend')
+        # Should redirect
+        self.assertRedirected(response, '/')

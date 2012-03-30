@@ -35,7 +35,15 @@ def get_user_model():
 SubclassedUser = get_user_model()
 
 
+def is_subclassed_user():
+    return hasattr(SubclassedUser, '_is_email_only')
+
+def is_username_user():
+    return hasattr(SubclassedUser, '_is_email_only') and not SubclassedUser._is_email_only
+
 def is_email_only():
     return hasattr(SubclassedUser, '_is_email_only') and SubclassedUser._is_email_only
 
-email_based_only_test = skipUnless(is_email_only(), "Only test these if configured in email mode, which can't be done at runtime")
+def is_auth_user():
+    from django.contrib.auth.models import User as AuthUser
+    return isinstance(SubclassedUser, AuthUser)

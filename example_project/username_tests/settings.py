@@ -7,6 +7,9 @@ from example_project.settings import *
 ###
 
 EXTENDED_AUTH_USER_MODEL = 'username_tests.User'
+AUTHENTICATION_BACKENDS = [
+    'extended_auth.backends.UsernameBackend',
+]
 
 INSTALLED_APPS = [
     'username_tests',
@@ -20,3 +23,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin',
 ]
+
+
+TESTS_TO_RUN = [
+    'extended_auth',
+    'username_tests.TestUsernameLoginForm',
+    'username_tests.TestUsernameRegister',
+    'username_tests.TestUsernameForgotPasswordProcess',
+]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db-username.sqlite3',
+    }
+}

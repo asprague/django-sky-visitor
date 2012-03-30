@@ -34,11 +34,6 @@ class User(EmailExtendedUser):
   * In your're `settings.py` add these lines:
 
 ```python
-# Change myapp to the name of the app where you extend EmailExtendedUser
-EXTENDED_AUTH_USER_MODEL = 'myapp.User'
-AUTHENTICATION_BACKENDS = [
-    'extended_auth.backends.EmailBackend',
-]
 
 # Add this line to your INSTALLED_APPS
 INSTALLED_APPS = [
@@ -48,6 +43,18 @@ INSTALLED_APPS = [
 
 # Specify a URL to redirect to after login
 LOGIN_REDIRECT_URL = '/'
+```
+
+## Sublcassing User model
+
+Add the following to your settings.py if you wish to subclass the User model:
+
+```python
+# Change myapp to the name of the app where you extend EmailExtendedUser
+EXTENDED_AUTH_USER_MODEL = 'myapp.User'
+AUTHENTICATION_BACKENDS = [
+    'extended_auth.backends.EmailBackend',
+]
 ```
 
 
@@ -90,11 +97,31 @@ admin.site.register(MyUser, MyUserAdmin)
 
 # Testing
 
+Tests are broken into three separate apps running under three different "modes":
+
+  1. "auth user" mode (default)
+    * Uses `example_project/settings.py`
+    * Uses `django.contrib.auth.models.User` as the user model
+    * Contains most of the tests
+  2. "email user" mode
+    * Uses `email_tests/settings.py`
+    * Uses `email_tests.models.User` (a subclass of `extended_auth.models.EmailExtendedUser`) as the user model
+  2. "username user" mode
+    * Uses `username_tests/settings.py`
+    * Uses `username_tests.models.User` (a subclass of `extended_auth.models.ExtendedUser`) as the user model
+
+
+A test runner is configured in each settings.py to run only the tests that are appropriate.
+
+You can run the tests like so:
+
     cd example_project
-    # Run module tests and email-based tests
-    ./manage.py test extended_auth example_project
+    # "auth user" tests
+    ./manage.py test
+    # "email user" tests
+    ./manage.py test --settings=email_tests.settings
     # Run username-based tests
-    ./manage.py test extended_auth username_tests --settings=username_tests.settings
+    ./manage.py test --settings=username_tests.settings
 
 
 # Subclassing User vs User Profiles

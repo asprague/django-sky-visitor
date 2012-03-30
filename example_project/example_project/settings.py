@@ -25,6 +25,13 @@ INSTALLED_APPS = [
     'django.contrib.admin',
 ]
 
+TESTS_TO_RUN = [
+    'extended_auth',
+    'example_project.TestRegister',
+    'example_project.TestAuthUserLoginForm',
+    'example_project.TestForgotPasswordProcess',
+]
+
 
 ###
 #
@@ -35,6 +42,7 @@ import os.path
 PROJECT_DIR = os.path.dirname(os.path.dirname(__file__))
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+TEST_RUNNER = 'example_project.runners.DefaultTestRunner'
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -45,7 +53,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': ':memory:',
+        'NAME': 'db.sqlite3',
     }
 }
 

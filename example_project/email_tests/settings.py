@@ -24,3 +24,17 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin',
 ]
+
+TESTS_TO_RUN = [
+    'extended_auth',
+    'email_tests.TestEmailLoginForm',
+    'email_tests.TestEmailRegister',
+    'email_tests.TestEmailForgotPasswordProcess',
+]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db-email.sqlite3',
+    }
+}

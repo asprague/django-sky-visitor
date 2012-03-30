@@ -6,7 +6,7 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.http import int_to_base36
-from extended_auth.utils import SubclassedUser as User
+from extended_auth.utils import SubclassedUser as User, email_based_only_test
 
 USER_EMAIL = 'user@example.com'
 USER_PASS = 'adminadmin'
@@ -121,26 +121,34 @@ class TestForgotPasswordProcess(BaseTestCase):
         self.assertRedirects(response, '/user/login/')
 
 
+
 class TestEmailRegister(BaseTestCase):
     view_url = '/user/register/'
+    _test_data = {
+        'email': 'testuser@example.com',
+        'password1': 'asdfasdf',
+        'password2': 'asdfasdf',
+    }
 
+    @email_based_only_test
     def test_register_view_exists(self):
         response = self.client.get(self.view_url)
         self.assertEqual(response.status_code, 200)
         form = response.context_data['form']
         self.assertIsInstance(form, EmailRegisterForm)
 
+    @email_based_only_test
     def test_registration_should_succeed(self):
-        data = {
-            'email': 'testuser@example.com',
-            'password1': 'asdfasdf',
-            'password2': 'asdfasdf',
-        }
+        testuser_email = self._test_data['email']
+        data = self._test_data
         response = self.client.post(self.view_url, data=data, follow=True)
         self.assertEqual(response.status_code, 200)
         # Should redirect to '/' (LOGIN_REDIRECT_URL)
         self.assertRedirects(response, '/')
+        self.assertEqual(User.objects.filter(email=testuser_email).count(), 1)
+        self.assertEqual(AuthUser.objects.filter(email=testuser_email).count(), 1)
 
+    @email_based_only_test
     def test_registration_should_fail_on_duplicate_email(self):
         testuser_email = 'testuser1@example.com'
         data1 = {
@@ -170,6 +178,7 @@ class TestEmailRegister(BaseTestCase):
         self.assertEqual(User.objects.filter(email=testuser_email).count(), 1)
         self.assertEqual(AuthUser.objects.filter(email=testuser_email).count(), 1)
 
+    @email_based_only_test
     def test_registration_should_fail_on_mismatched_password(self):
         data = {
             'email': 'testuser@example.com',

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from django.utils.translation import ugettext_lazy as _
+from django.utils.unittest.case import skipUnless
 
 
 def get_user_model():
@@ -34,3 +35,5 @@ SubclassedUser = get_user_model()
 
 def is_email_only():
     return hasattr(SubclassedUser, '_is_email_only') and SubclassedUser._is_email_only
+
+email_based_only_test = skipUnless(is_email_only(), "Only test these if configured in email mode, which can't be done at runtime")

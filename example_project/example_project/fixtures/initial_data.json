@@ -13,7 +13,7 @@
             "groups": [],
             "user_permissions": [],
             "password": "pbkdf2_sha256$10000$NvQuQhsjcBxK$tgOFR3e66p3x2BR/Eo9Z6f/15NkFRlGQzEGXbYlGudM=",
-            "email": "user@example.com",
+            "email": "testuser@example.com",
             "date_joined": "2012-03-21T20:52:24.955Z"
         }
     },

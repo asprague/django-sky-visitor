@@ -14,12 +14,14 @@
 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.unittest.case import skipUnless
+from extended_auth.settings import get_app_setting
+
 
 
 def get_user_model():
     from django.conf import settings
     # Grab the user model path
-    extened_user_model_path = getattr(settings, 'EXTENDED_AUTH_USER_MODEL', None)
+    extened_user_model_path = get_app_setting('EXTENDED_AUTH_USER_MODEL')
     if extened_user_model_path is None:
         raise Exception(_("Cannot find your specified EXTENDED_AUTH_USER_MODEL. Is EXTENDED_AUTH_USER_MODEL in your settings.py? Are ExtendedUser and your ExtendedUser-subclass app both in your INSTALLED_APPS?"))
 

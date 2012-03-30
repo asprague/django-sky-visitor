@@ -10,12 +10,7 @@ TEMPLATE_DEBUG = DEBUG
 #
 ###
 
-EXTENDED_AUTH_USER_MODEL = 'example_project.User'
-#EXTENDED_AUTH_USER_MODEL = 'django.contrib.auth.User'
 LOGIN_REDIRECT_URL = '/'
-AUTHENTICATION_BACKENDS = [
-    'extended_auth.backends.EmailBackend',
-]
 
 INSTALLED_APPS = [
     'example_project',
@@ -50,9 +45,10 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db.sqlite3',
+        'NAME': ':memory:',
     }
 }
+
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

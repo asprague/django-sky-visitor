@@ -1,10 +1,19 @@
 from example_project.settings import *
 
-EXTENDED_AUTH_USER_MODEL = 'django.contrib.auth.User'
+###
+#
+#   Settings specific to extended_auth
+#
+###
+
+EXTENDED_AUTH_USER_MODEL = 'email_tests.User'
+AUTHENTICATION_BACKENDS = [
+    'extended_auth.backends.EmailBackend',
+]
 
 
 INSTALLED_APPS = [
-    'username_tests',
+    'email_tests',
     'extended_auth',
 
     'django.contrib.auth',
@@ -15,11 +24,3 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin',
 ]
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'db2.sqlite3',
-    }
-}

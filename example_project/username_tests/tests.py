@@ -1,4 +1,4 @@
-from example_project.tests import TestRegister, FIXTURE_USER_DATA, TestForgotPasswordProcess, TestLoginFormMixin, BaseTestCase
+from example_project.tests import TestRegister, FIXTURE_USER_DATA, TestForgotPasswordProcess, TestLoginFormBase
 from extended_auth.forms import LoginForm, RegisterForm
 from django.test import TestCase
 from extended_auth.utils import SubclassedUser
@@ -8,7 +8,7 @@ from django.contrib.auth.models import User as AuthUser
 TestUsernameForgotPasswordProcess = TestForgotPasswordProcess
 
 
-class TestUsernameLoginForm(TestLoginFormMixin, BaseTestCase):
+class TestUsernameLoginForm(TestLoginFormBase):
 
     def test_login_form_should_be_username_based(self):
         response = self.client.get(self.view_url)

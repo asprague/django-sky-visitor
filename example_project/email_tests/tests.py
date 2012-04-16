@@ -1,14 +1,10 @@
-from example_project.tests import TestRegister, TestLoginFormMixin, FIXTURE_USER_DATA, BaseTestCase, TestForgotPasswordProcess
+from example_project.tests import TestRegister, FIXTURE_USER_DATA, TestForgotPasswordProcess, TestLoginFormBase
 from extended_auth.forms import EmailLoginForm, EmailRegisterForm
 from django.contrib.auth.models import User as AuthUser
 from django.test import TestCase
 from extended_auth.utils import SubclassedUser
 
 TestEmailForgotPasswordProcess = TestForgotPasswordProcess
-
-
-class BaseEmailTestCase(BaseTestCase):
-    pass
 
 
 class TestEmailRegister(TestRegister):
@@ -50,7 +46,7 @@ class TestEmailRegister(TestRegister):
         self.assertEqual(AuthUser.objects.filter(email=testuser_email).count(), 1)
 
 
-class TestEmailLoginForm(TestLoginFormMixin, BaseEmailTestCase):
+class TestEmailLoginForm(TestLoginFormBase):
 
     def test_login_form_should_be_email_based(self):
         response = self.client.get(self.view_url)

@@ -33,9 +33,6 @@ class BaseTestCase(TestCase):
         self.assertEqual(response.status_code, status_code)
         self.assertEqual(response._headers['location'][1], 'http://testserver%s' % expected_url)
 
-class AuthUserBaseTestCase(BaseTestCase):
-    pass
-
 
 class TestRegister(BaseTestCase):
     view_url = '/user/register/'
@@ -74,7 +71,7 @@ class TestRegister(BaseTestCase):
         self.assertIn('password2', form.errors)
 
 
-class TestLoginFormMixin(object):
+class TestLoginFormBase(BaseTestCase):
     view_url = '/user/login/'
 
     def test_login_form_should_exist(self):
@@ -88,7 +85,7 @@ class TestLoginFormMixin(object):
         self.assertRedirected(response, '/')
 
 
-class TestAuthUserLoginForm(TestLoginFormMixin, AuthUserBaseTestCase):
+class TestAuthUserLoginForm(TestLoginFormBase):
 
     def test_auth_user_should_have_username_form(self):
         response = self.client.get(self.view_url)

@@ -11,6 +11,7 @@ A full featured authentication and user system that extends the default Django c
   * Invitations
   * Password rules
 
+This library addresses many of the problems discussed on the Django wiki about [how to improve contrib.auth](https://code.djangoproject.com/wiki/ContribAuthImprovements).
 
 # Usage
 Throughout this app, any class beginning with `Email` indicates that it is for use with email-only authentication systems.

@@ -143,8 +143,8 @@ If you plan on subclassing `User` into multiple models (say, `CoordinatorUser` a
 your best option. You might use a [pattern](http://schinckel.net/2011/10/09/why-customuser-subclasses-are-not-such-a-good-idea/) like Matthew Schickel suggests.
 
 There have been many arguments against subclassing using ([here](http://www.b-list.org/weblog/2007/feb/20/about-model-subclassing/)), but I haven't found
-any of them compelling enough to make up for the coding efficency gains that suclassing offeres (see benefits list above). The User subclassing approach offered
-in this app is a resuable implementation of the subclassing approach that has been documenting in many blog posts ([here](http://scottbarnham.com/blog/2008/08/21/extending-the-django-user-model-with-inheritance/))
+any of them compelling enough to make up for the coding efficiency gains that subclassing offers (see benefits list above). The User subclassing approach offered
+in this app is a reusable implementation of the subclassing approach that has been documenting in many blog posts ([here](http://scottbarnham.com/blog/2008/08/21/extending-the-django-user-model-with-inheritance/))
 
 If you plan on utilizing the subclassing aspects of this application, it is best to use them from the beginning so you don't have a mix of User and SubclassedUser entries in the database.
 

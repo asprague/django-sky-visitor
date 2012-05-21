@@ -50,7 +50,7 @@ def get_version(package):
     Return package version as listed in `__version__` in `init.py`.
     """
     import extended_auth
-    return '.'.join(extended_auth.__version__)
+    return '.'.join([str(i) for i in extended_auth.__version__])
 
 
 def get_packages(package):

@@ -6,7 +6,7 @@ TEMPLATE_DEBUG = DEBUG
 
 ###
 #
-#   Settings specific to extended_auth
+#   Settings specific to sky_visitor
 #
 ###
 
@@ -14,7 +14,7 @@ LOGIN_REDIRECT_URL = '/'
 
 INSTALLED_APPS = [
     'example_project',
-    'extended_auth',
+    'sky_visitor',
 
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -26,7 +26,7 @@ INSTALLED_APPS = [
 ]
 
 TESTS_TO_RUN = [
-    'extended_auth',
+    'sky_visitor',
     'example_project.TestRegister',
     'example_project.TestAuthUserLoginForm',
     'example_project.TestForgotPasswordProcess',

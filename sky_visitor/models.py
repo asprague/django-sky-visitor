@@ -116,7 +116,7 @@ class EmailExtendedUser(ExtendedUser):
         super(EmailExtendedUser, self).save(*args, **kwargs)
 
     def validate_email_is_unique(self, force_validation=False):
-        from extended_auth.utils import SubclassedUser as User
+        from sky_visitor.utils import SubclassedUser as User
         if self.validate_email_uniqueness or force_validation:
             if User.objects.filter(email__iexact=self.email).exclude(id=self.id).exists():
                 raise ValidationError({'email': self.error_messages['unique_email']})

@@ -1,6 +1,6 @@
 A full featured authentication and user system that extends the default Django contib.auth pacakge.
 
-**Note:** Version 0.1.0. This library is under active development. While in active development, the API will be changing frequently.
+**Note:** Version 0.7.0. This library is under active development. While in active development, the API will be changing frequently.
 
 
 # Features
@@ -13,20 +13,20 @@ A full featured authentication and user system that extends the default Django c
 
 This library addresses many of the problems discussed on the Django wiki about [how to improve contrib.auth](https://code.djangoproject.com/wiki/ContribAuthImprovements).
 
+
 # Usage
 Throughout this app, any class beginning with `Email` indicates that it is for use with email-only authentication systems.
 In all cases, there should be a matching class without `Email` at the beginning of the class name that is for use with username-focused authentication systems.
 
-
 ## Quickstart
 
-  * `pip install PACKAGEPATHHERE`
-  * Add `extended_auth` near the top of your `INSTALLED_APPS` setting
+  * `pip install git+https://github.com/concentricsky.com/django-sky-visitor`
+  * Add `sky_visitor` near the top of your `INSTALLED_APPS` setting
   * Somewhere in your own `myapp.models.py`, define one of the two following code blocks:
 
 ```python
 # Assume this is in myapp.models
-from extended_auth import EmailExtendedUser, EmailUserManager
+from sky_visitor import EmailExtendedUser, EmailUserManager
 
 class User(EmailExtendedUser):
     objects = EmailUserManager()
@@ -38,7 +38,7 @@ class User(EmailExtendedUser):
 
 # Add this line to your INSTALLED_APPS
 INSTALLED_APPS = [
-    'extended_auth',
+    'sky_visitor',
     # ...
 ]
 
@@ -52,9 +52,9 @@ Add the following to your settings.py if you wish to subclass the User model:
 
 ```python
 # Change myapp to the name of the app where you extend EmailExtendedUser
-EXTENDED_AUTH_USER_MODEL = 'myapp.User'
+SKY_VISITOR_USER_MODEL = 'myapp.User'
 AUTHENTICATION_BACKENDS = [
-    'extended_auth.backends.EmailBackend',
+    'sky_visitor.backends.EmailBackend',
 ]
 ```
 
@@ -83,10 +83,10 @@ By default, we remove the admin screens for `auth.User` and place in an auth scr
 
 If you want to re-add the the django contrib user, you can do that by re-registering django.contrib.auth.User
 
-If you want fine-grained control over the admin you can subclass the extended_auth `UserAdmin`:
+If you want fine-grained control over the admin you can subclass the sky_visitor `UserAdmin`:
 
 ```python
-from extended_auth.admin import UserAdmin
+from sky_visitor.admin import UserAdmin
 
 class MyUserAdmin(UserAdmin):
    # Your code here
@@ -106,10 +106,10 @@ Tests are broken into three separate apps running under three different "modes":
     * Contains most of the tests
   2. "email user" mode
     * Uses `email_tests/settings.py`
-    * Uses `email_tests.models.User` (a subclass of `extended_auth.models.EmailExtendedUser`) as the user model
+    * Uses `email_tests.models.User` (a subclass of `sky_visitor.models.EmailExtendedUser`) as the user model
   2. "username user" mode
     * Uses `username_tests/settings.py`
-    * Uses `username_tests.models.User` (a subclass of `extended_auth.models.ExtendedUser`) as the user model
+    * Uses `username_tests.models.User` (a subclass of `sky_visitor.models.ExtendedUser`) as the user model
 
 
 A test runner is configured in each settings.py to run only the tests that are appropriate.
@@ -137,7 +137,7 @@ Subclassing the User model offers a few benefits over the `UserProfile` approach
   * In the background, Django automatically does an inner join between `contrib.auth.models.User` and your subclassed user model via
 [proxy models](https://docs.djangoproject.com/en/dev/topics/db/models/#proxy-models). This is nicer than having to do an extra query for the `UserProfile` each time you need those fields.
 
-[[ MOVE THIS TO A BLOG POST ]]
+// MOVE THIS TO A BLOG POST
 
 If you plan on subclassing `User` into multiple models (say, `CoordinatorUser` and `VolunteerUser`) then this packages is probably not
 your best option. You might use a [pattern](http://schinckel.net/2011/10/09/why-customuser-subclasses-are-not-such-a-good-idea/) like Matthew Schickel suggests.
@@ -154,6 +154,7 @@ If you plan on utilizing the subclassing aspects of this application, it is best
 Development TODO list:
 
   * Invitation clean up and tests
+  * Fix setup.py
 
 Features to add:
 
@@ -170,13 +171,11 @@ Improvements to documentation:
   * Write sphinx documentation
   * Step by step of password reset process and how it works
   * List all template paths that the default templates will look for
-  * Change PACKAGEPATHHERE in the quickstart guide once this is up on github
-  * Add link to github issue queue in the "contributing" section
   * Add link to blog post about subclassing the user
 
 
 # Contributing
-Please fork this repo and send pull requests. Submit issues/questions/suggestions in the issue queue.
+Please fork this repo and send pull requests. Submit issues/questions/suggestions in the [issue queue](https://github.com/concentricsky/django-sky-visitor/issues).
 
 
 # Author

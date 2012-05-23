@@ -16,7 +16,7 @@ from django.template import RequestContext, loader
 from django.conf import settings
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseForbidden
-from extended_auth.exceptions import Http403
+from sky_visitor.exceptions import Http403
 
 
 def render_to_403(*args, **kwargs):

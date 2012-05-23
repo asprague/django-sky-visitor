@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import urlparse
-from extended_auth.emails import TokenTemplateEmail
+from sky_visitor.emails import TokenTemplateEmail
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, login, logout
 from django.contrib.auth.tokens import default_token_generator
@@ -26,16 +26,16 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import RedirectView
 from django.views.generic.edit import FormView, UpdateView, CreateView
 from django.utils.translation import ugettext_lazy as _
-from extended_auth.backends import auto_login
-from extended_auth.forms import *
-from extended_auth.utils import SubclassedUser as User, is_email_only
+from sky_visitor.backends import auto_login
+from sky_visitor.forms import *
+from sky_visitor.utils import SubclassedUser as User, is_email_only
 from django.contrib.auth.models import User as AuthUser
 from django.conf import settings
 
 
 class RegisterView(CreateView):
     model = User
-    template_name = 'extended_auth/register.html'
+    template_name = 'sky_visitor/register.html'
     success_message = _("Successfully registered and signed in")
     login_on_success = True
     # TODO: Finish implementing this view
@@ -66,14 +66,14 @@ class LoginView(FormView):
         in urls.py:
             url(r'^login/$',
                 LoginView.as_view(
-                    form_class=MyExtendedAuthFormClass,
+                    form_class=MyVisitorFormClass,
                     success_url='/my/custom/success/url/),
                 name="login"),
 
     """
     redirect_field_name = REDIRECT_FIELD_NAME
     success_url_overrides_redirect_field = False
-    template_name = 'extended_auth/login.html'
+    template_name = 'sky_visitor/login.html'
 
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
@@ -175,7 +175,7 @@ class InvitationMixin(SendTokenEmailMixin):
 
 class InvitationView(InvitationMixin, FormView):
     # TODO: Change this to be a CreateView and define good defaults here.
-    template_name = 'extended_auth/invite.html'
+    template_name = 'sky_visitor/invite.html'
     # Need to define success_url or override get_success_url()
     pass
 
@@ -218,7 +218,7 @@ class InvitationCompleteView(TokenValidateMixin, UpdateView):
     form_class_set_password = SetPasswordForm
     context_object_name = 'invited_user'
     auto_login_on_success = True
-    template_name = 'extended_auth/invite_complete.html'
+    template_name = 'sky_visitor/invite_complete.html'
     invalid_token_message = _("This one-time use invite URL has already been used. This means you have likely already created an account. Please try to login or use the forgot password form.")
     # Since this is an UpdateView, the defautl success_url will be the user's get_absolute_url(). Override if you'd like different behavior
 
@@ -285,7 +285,7 @@ class LogoutView(RedirectView):
 
 class ForgotPasswordView(SendTokenEmailMixin, FormView):
     form_class = PasswordResetForm
-    template_name = 'extended_auth/forgot_password_start.html'
+    template_name = 'sky_visitor/forgot_password_start.html'
 
     def form_valid(self, form):
         user = form.users_cache[0]
@@ -295,7 +295,7 @@ class ForgotPasswordView(SendTokenEmailMixin, FormView):
     def get_email_kwargs(self, user):
         kwargs = super(ForgotPasswordView, self).get_email_kwargs(user)
         domain = self.request.get_host()
-        kwargs['email_template_name'] = 'extended_auth/forgot_password_email.html'
+        kwargs['email_template_name'] = 'sky_visitor/forgot_password_email.html'
         kwargs['token_view_name'] = 'forgot_password_change'
         kwargs['domain'] = domain
         kwargs['subject'] = "Password reset for %s" % domain
@@ -307,7 +307,7 @@ class ForgotPasswordView(SendTokenEmailMixin, FormView):
 
 class ForgotPasswordChangeView(TokenValidateMixin, FormView):
     form_class = SetPasswordForm
-    template_name = 'extended_auth/forgot_password_change.html'
+    template_name = 'sky_visitor/forgot_password_change.html'
     invalid_token_message = _("Invalid reset password link. Please reset your password again.")
     auto_login_on_success = True
 

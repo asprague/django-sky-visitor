@@ -1,4 +1,4 @@
-from extended_auth.models import EmailUserManager, EmailExtendedUser
+from sky_visitor.models import EmailUserManager, EmailExtendedUser
 
 
 # This is the model that is used by default in this app.

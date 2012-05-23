@@ -4,11 +4,11 @@ from django.core.urlresolvers import reverse
 from django.test.testcases import TestCase
 from django.utils.http import int_to_base36
 from django.utils.unittest.case import skipUnless
-from extended_auth import utils
-from extended_auth.forms import EmailRegisterForm, LoginForm, SetPasswordForm
+from sky_visitor import utils
+from sky_visitor.forms import EmailRegisterForm, LoginForm, SetPasswordForm
 from django.contrib.auth.models import User as AuthUser
-from extended_auth.tests import auth_user_only_test
-from extended_auth.utils import SubclassedUser
+from sky_visitor.tests import auth_user_only_test
+from sky_visitor.utils import SubclassedUser
 
 FIXTURE_USER_DATA = {
     'username': 'testuser',
@@ -155,7 +155,7 @@ class TestForgotPasswordProcess(BaseTestCase):
         # Should have a new password
         self.assertTrue(user.check_password(new_pass))
         # Should automatically log the user in
-        self.assertLoggedIn(user, backend='extended_auth.backends.BaseBackend')
+        self.assertLoggedIn(user, backend='sky_visitor.backends.BaseBackend')
 
         # Now log the user out and make sure that reset link doesn't work anymore
         self.client.logout()

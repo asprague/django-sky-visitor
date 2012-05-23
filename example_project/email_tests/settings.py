@@ -2,19 +2,19 @@ from example_project.settings import *
 
 ###
 #
-#   Settings specific to extended_auth
+#   Settings specific to sky_visitor
 #
 ###
 
-EXTENDED_AUTH_USER_MODEL = 'email_tests.User'
+SKY_VISITOR_USER_MODEL = 'email_tests.User'
 AUTHENTICATION_BACKENDS = [
-    'extended_auth.backends.EmailBackend',
+    'sky_visitor.backends.EmailBackend',
 ]
 
 
 INSTALLED_APPS = [
     'email_tests',
-    'extended_auth',
+    'sky_visitor',
 
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -26,7 +26,7 @@ INSTALLED_APPS = [
 ]
 
 TESTS_TO_RUN = [
-    'extended_auth',
+    'sky_visitor',
     'email_tests.TestEmailLoginForm',
     'email_tests.TestEmailRegister',
     'email_tests.TestEmailForgotPasswordProcess',

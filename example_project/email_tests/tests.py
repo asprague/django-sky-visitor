@@ -1,8 +1,8 @@
 from example_project.tests import TestRegister, FIXTURE_USER_DATA, TestForgotPasswordProcess, TestLoginFormBase
-from extended_auth.forms import EmailLoginForm, EmailRegisterForm
+from sky_visitor.forms import EmailLoginForm, EmailRegisterForm
 from django.contrib.auth.models import User as AuthUser
 from django.test import TestCase
-from extended_auth.utils import SubclassedUser
+from sky_visitor.utils import SubclassedUser
 
 TestEmailForgotPasswordProcess = TestForgotPasswordProcess
 
@@ -59,6 +59,6 @@ class TestEmailLoginForm(TestLoginFormBase):
         response = self.client.post(self.view_url, data)
         user = SubclassedUser.objects.get(email=data['email'])
         # Should be logged in
-        self.assertLoggedIn(user, backend='extended_auth.backends.EmailBackend')
+        self.assertLoggedIn(user, backend='sky_visitor.backends.EmailBackend')
         # Should redirect
         self.assertRedirected(response, '/')

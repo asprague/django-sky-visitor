@@ -1,4 +1,4 @@
-from extended_auth.models import ExtendedUser, UserManager
+from sky_visitor.models import ExtendedUser, UserManager
 
 
 class User(ExtendedUser):

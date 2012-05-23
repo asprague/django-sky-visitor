@@ -16,11 +16,11 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.contrib.auth.models import User as AuthUser
 from django.utils.unittest.case import skipUnless
-from extended_auth import utils
-from extended_auth.utils import SubclassedUser as User
-from extended_auth.forms import UniqueRequiredEmailField
+from sky_visitor import utils
+from sky_visitor.utils import SubclassedUser as User
+from sky_visitor.forms import UniqueRequiredEmailField
 
-subclassed_user_only_test = skipUnless(utils.is_subclassed_user(), "Only test these if configured in an extended_auth subclassed user mode")
+subclassed_user_only_test = skipUnless(utils.is_subclassed_user(), "Only test these if configured in an sky_visitor subclassed user mode")
 username_user_only_test = skipUnless(utils.is_username_user(), "Only test these if configured in username-based user mode")
 email_user_only_test = skipUnless(utils.is_email_only(), "Only test these if configured in email-based user mode")
 auth_user_only_test = skipUnless(utils.is_auth_user(), "Only test these if configured in auth.User")

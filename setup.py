@@ -19,10 +19,10 @@ import re
 import os
 import sys
 
-name = 'django-extended-auth'
+name = 'django-sky-visitor'
 package = ''
 description = 'Extension to the django authentication/user system.'
-url = 'http://github.com/concentricsky/django-custom-user/'  # TODO: set real URL
+url = 'http://github.com/concentricsky/django-sky-visitor/'
 author = 'Concentric Sky'
 author_email = 'django@concentricsky.com'
 license = 'Apache 2.0'
@@ -49,8 +49,8 @@ def get_version(package):
     """
     Return package version as listed in `__version__` in `init.py`.
     """
-    import extended_auth
-    return '.'.join([str(i) for i in extended_auth.__version__])
+    import sky_visitor
+    return '.'.join([str(i) for i in sky_visitor.__version__])
 
 
 def get_packages(package):

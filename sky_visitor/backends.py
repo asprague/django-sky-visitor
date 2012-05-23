@@ -15,7 +15,7 @@
 from django.contrib.auth import backends, login
 from django.core.exceptions import ImproperlyConfigured
 from django.core.validators import email_re
-from extended_auth.utils import SubclassedUser as User
+from sky_visitor.utils import SubclassedUser as User
 
 
 # Reference: http://groups.google.com/group/django-users/browse_thread/thread/39488db1864c595f
@@ -23,7 +23,7 @@ def auto_login(request, user):
     """
     Allows you to fake a login in your code
     """
-    user.backend = 'extended_auth.backends.BaseBackend'
+    user.backend = 'sky_visitor.backends.BaseBackend'
     login(request, user)
 
 

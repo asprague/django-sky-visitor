@@ -5,13 +5,16 @@ A full featured authentication and user system that extends the default Django c
 
 # Features
 
-  * Subclass the User model to add your own fields, making queries easier to write
   * Class-based view implementations of all of the views
   * Email-based authentication. Entirely hides username from the user experience and allows an email-focused experience.
   * Invitations
   * Password rules
+  * Subclass the User model to add your own fields, making queries easier to write (this will be deprecated when Django core implements their solution)
 
 This library addresses many of the problems discussed on the Django wiki about [how to improve contrib.auth](https://code.djangoproject.com/wiki/ContribAuthImprovements).
+
+## Subclassing User
+The Django core developers are working on creating a solution for adding fields to the user model (see [discussion thread](https://groups.google.com/forum/#!topic/django-developers/PLTW8Mon9QU/discussion)). Please be advised that when Django core adds support for extending user fields, this app will depricate it's subclassing solution and provide an upgrade path.
 
 
 # Usage
@@ -125,30 +128,6 @@ You can run the tests like so:
     ./manage.py test --settings=username_tests.settings
 
 
-# Subclassing User vs User Profiles
-One of the problems this module was created to solve is the challenge presented when you want to store additional information
-about the user. The Django docs [suggest](https://docs.djangoproject.com/en/dev/topics/auth/#storing-additional-information-about-users)
-having a `UserProfile` model with a OneToOneField to `User`.
-
-Subclassing the User model offers a few benefits over the `UserProfile` approach
-
-  * `ModelForm`s will automatically include your extended fields in the forms they generate. This makes CRUD operations much easier.
-  * Similarly, Django's admin pages will automatically include this fields on your subclassed user
-  * In the background, Django automatically does an inner join between `contrib.auth.models.User` and your subclassed user model via
-[proxy models](https://docs.djangoproject.com/en/dev/topics/db/models/#proxy-models). This is nicer than having to do an extra query for the `UserProfile` each time you need those fields.
-
-// MOVE THIS TO A BLOG POST
-
-If you plan on subclassing `User` into multiple models (say, `CoordinatorUser` and `VolunteerUser`) then this packages is probably not
-your best option. You might use a [pattern](http://schinckel.net/2011/10/09/why-customuser-subclasses-are-not-such-a-good-idea/) like Matthew Schickel suggests.
-
-There have been many arguments against subclassing using ([here](http://www.b-list.org/weblog/2007/feb/20/about-model-subclassing/)), but I haven't found
-any of them compelling enough to make up for the coding efficiency gains that subclassing offers (see benefits list above). The User subclassing approach offered
-in this app is a reusable implementation of the subclassing approach that has been documenting in many blog posts ([here](http://scottbarnham.com/blog/2008/08/21/extending-the-django-user-model-with-inheritance/))
-
-If you plan on utilizing the subclassing aspects of this application, it is best to use them from the beginning so you don't have a mix of User and SubclassedUser entries in the database.
-
-
 # Roadmap
 
 Development TODO list:
@@ -184,4 +163,5 @@ Built at [Concentric Sky](http://www.concentricsky.com/) by [Jeremy Blanchard](h
 This project is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0). Copyright 2012 Concentric Sky, Inc.
 
 
+[discussion]:
 

@@ -23,7 +23,7 @@ In all cases, there should be a matching class without `Email` at the beginning 
 
 ## Quickstart
 
-  * `pip install git+https://github.com/concentricsky.com/django-sky-visitor`
+  * `pip install git+ssh://git@github.com/concentricsky/django-sky-visitor.git`
   * Add `sky_visitor` near the top of your `INSTALLED_APPS` setting
   * Somewhere in your own `myapp.models.py`, define one of the two following code blocks:
 

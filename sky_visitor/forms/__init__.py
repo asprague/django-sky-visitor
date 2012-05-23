@@ -18,7 +18,7 @@ from django.contrib.auth import forms as auth_forms, authenticate
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User as AuthUser
 from sky_visitor.utils import SubclassedUser as User
-from sky_visitor.fields import UniqueRequiredEmailField, PasswordRulesField
+from sky_visitor.forms.fields import UniqueRequiredEmailField, PasswordRulesField
 
 
 class NameRequiredMixin(object):
